@@ -79,9 +79,76 @@
   - storage: instance-store, ebs & efs
   - network card: public ip address
   - security group: firewall
-  - ec2 user data: bootstrap script
+  - user data
+- ec2 user data: bootstrap script
+  - only run once at the instance first start
+  - runs with the root user permissions
+- instance types
+  - general purpose
+  - compute optimized: HPC, ML, gaming server, batching workloads
+  - memory optimized: databases, in-memory databases, big unstructured data real-time processing
+  - storage optimized: OLTP, databases, in-memory databases, data warehouse, distributed file systems
+- security groups
+  - only contain `allow` rules
+  - stateful, incoming traffic --> outgoing traffic
+  - can be attached to multi-instances
+  - application timeout error--> security group
+  - all inbound traffic is blocked by default
+- classic ports:
+  - 22: ssh, sftp
+  - 21: ftp
+  - 80: http
+  - 443: https
+  - 3389: rdp (remote desktop procotol -- login windows instance)
+- ssh & ec2 instance connect
+- ec2 purchaing options
+  - on-demand
+  - reserved instances
+  - saving plans
+  - spot instances
+  - dedicated hosts
+  - dedicated instance
+  - capacity reservations (combined with RI, Saving Plans)
 
 
+#### ec2 instance storage
+
+- ebs volume
+  - network drive
+  - az-scoped
+  - have a provisioned capacity
+  - root volume: delete on termination(by default)
+  - snapshots: no need to detach, but recommended
+    - snapshot features:
+      - archive
+      - recycle bin
+      - fast snapshot restore
+- ami
+  - customization of ec2 instances
+  - region-scoped
+- instance store:
+  - better I/O
+  - good for buffer, cache
+- ebs volume types
+  - gp2/gp3
+  - io1/io2: support ebs multi-attach (up to 16 ec2)
+  - st1: big data, data warehouse,...
+  - sc1: infrequently access
+  - gp and io can be used as root volumes
+- efs:
+  - multi-az
+  - nfs protocol
+  - for linux
+  - encryption using kms
+- efs performance & storage classes
+  - performance mode
+  - throughput mode
+  - storage classes: storage tiers, availability
+
+
+#### HA and scalability
+
+- 
 
 ### practice tests
 
