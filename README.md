@@ -207,6 +207,85 @@
  
 
 #### rds and aurora and elasticache
+
+- RDS: relational db service
+  - support multi different db engines, including aws aurora
+  - managed service
+  - cannot ssh to the underlying instances
+  - storage auto scaling:
+    - have to set `Maximum Storage Threshold`
+  - read replicas:
+    - up to 15
+    - within az, cross az or cross region
+    - replication is `async`
+    - apps must update db connection string
+    - replicas can be promoted to their own db
+    - use case: data analytics
+    - network cost: same-region, free; cross-region charged
+  - multi-az (Disaster Recovery):
+    - replication: `sync`
+    - one DNS name
+    - not used for scaling
+    - just a standby
+    - from single-az to multi-az: click `modify`, then a snapshot is created, then a new db is created, then a synchronization is established
+  - rds proxy:
+    - fully managed db proxy
+    - pool and share db connections
+    - reduce rds & aurora failover time
+    - must be access from vpc (private)
+- Aurora:
+  - support mysql and postgres
+  - HA & read scaling:
+    - 6 copies across 3 az:
+      - 4/6 needed for write
+      - 3/6 needed for read
+      - up to 15 read replicas
+      - auto failover
+      - cross-region replication
+  - aurora db cluster:
+    - writer endpoint
+    - reader endpoint
+  - rds & aurora security:
+    - at-rest encryption
+    - in-flight encryption
+    - iam authentication
+    - security groups
+    - no ssh except on `rds custom`
+    - audit logs can be enabled and sent to cloudwatch logs
+- elasticache:
+  - managed redis:
+    - multi-az and auto failover
+    - read replicas with HA
+    - backup and restore
+  - managed memcached:
+    - mutli-node
+    - no HA
+    - no persistant
+    - no backup and restore
+    - multi-threading
+  - cache must have an invalidation strategy to make sure only the most current data is used in there
+  - cache implementation considerations:
+    - outdated data
+    - data changing slowly or rapidly
+    - data structured well or not
+  - lazy loading/ cache-aside/ lazy population:
+    - cons: cache read miss cause 3 round trips; data could be stale 
+  - write through -- add or update cache when db is updated:
+    - cons: data missed until it is added or updated in the main db (using lazy loading to solve it); a lot of data will never be read since each time db is updated, it will also update the cache
+  - cache evictions and TTL
+    - occur in three ways:
+      - delete explicitly
+      - memory is full and it is not recently used
+      - a TTL is set
+    - use cases: leaderboards; comments; activity stream
+    - consider to scale up or out if eviction happens too frequently
+  - final words of wisdom:
+    - lazy loading works for many cases, especially on the read side
+    - write-through is usually combined with lazy loading as targeted for the queries or workloads
+    - set a ttl is usually not a bad idea, except when using write-through
+    - only cache things that make sense
+
+  
 #### route53
 #### vpc
 #### s3
