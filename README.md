@@ -486,6 +486,41 @@
 
 
 #### s3 advanced
+
+- moving between storage classes
+  - using `lifecycle rules`
+- lifecycle rules:
+  - transition actions
+  - expiration actions
+  - can be create for certain prefix or object tags
+- s3 analytics -- storage class analysis
+  - recommendations for standard and standard IA
+  - good first step to put together lifecycle rules
+- s3 event notifications
+  - sns
+  - sqs
+  - lambda
+  - eventbridge:
+    - advanced filtering options with json rules
+    - multi-destinations
+    - eventbridge capabilities
+- s3 performance
+  - 3,500 put/copy/post/delete per prefix
+  - 5,500 get/head per prefix
+  - multi-part upload: must use > 5gb
+  - s3 transfer acceleration
+  - s3 byte-range fetches
+    - parallelize get requests
+    - can be configured to only fetch part of the data
+- s3 select & glacier select
+  - less network transfer
+  - can filter rows and columns
+  - can retrieve less data using sql
+- s3 user-defined object metadata & s3 object tags
+  - we cannot search the object metadata or object tags
+  - instead, we must use external db as a search index, such as dynamodb
+
+
 #### s3 security
 #### cloudfront
 #### containers
