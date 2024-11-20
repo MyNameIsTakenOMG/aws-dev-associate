@@ -522,6 +522,53 @@
 
 
 #### s3 security
+
+- object encryption
+  - sse-s3: use the key managed and owned by aws s3
+    - header: "x-amz-server-side-encryption": "AES256"
+  - sse-kms: use aws kms to manage the key
+    - header: "x-amz-server-side-encryption": "aws:kms"
+    - audit using cloudtrail
+    - kms limit
+  - sse-c: encryption key is managed by you
+    - https is a must
+    - the key must be provided every request
+    - aws only handle encryption
+  - client-side encryption: cse
+    - use client libraries like: Amazon S3 Client-Side Encryption Library
+    - clients handle encryption and decryption
+- encryption in transit
+  - ssl/tls
+  - bucket policy condition: `aws:SecureTransport:`
+- default encryption vs bucket policies
+  - **note**: bucket policies are evaluated before default encryption
+- s3 cors
+  - we need to enable correct cors headers for clients to fetch
+- s3 MFA delete
+  - only root account can enable/disable MFA delete
+  - no need: enable versioning; list deleted versions
+  - need: permanently delete version; suspend versioning
+- s3 access logs
+  - set a target bucket(different) for storing access logs
+- pre-signed urls
+  - use cli, sdk, console to create pre-signed urls
+- s3 access points
+  - has its own domain
+  - an access point policy
+- s3 access points -- vpc origin
+  - between the vpc gateway endpoint or interface endpoint and s3 buckets
+  - vpc endpoint policy must allow access to the target bucket and access point
+- s3 object lambda
+  - architecture:
+    - client
+    - s3 object lambda access point
+    - lambda
+    - s3 access point
+  - use cases:
+    - redacting personal info before send them back to the caller
+    - converting data formats or resizing images
+
+  
 #### cloudfront
 #### containers
 #### elastic beanstalk
