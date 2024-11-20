@@ -376,6 +376,35 @@
 
 
 #### vpc
+
+- overview -- basics:
+  - vpc: private network
+  - public subnet
+  - private subnet
+  - route tables
+- internet gateway
+- nat gateway (or nat instances:self-managed)
+- NACL & security group
+  - NACL: allow or deny; subnet level; stateless
+  - security group: only allow; ec2 instance/ENI; stateful
+- vpc flow logs:
+  - vpc flow logs, subnet flow logs, ENI flow logs
+  - logs can go to s3, KDF, cloudwatch logs
+- vpc peering:
+  - connect two vpc, privately using aws network
+  - must not have overlapping CIDR
+  - not transitive
+- vpc endpoints:
+  - gateway endpoints: s3, dynamodb
+  - interface endpoint: for DX, s2s vpn
+    - public virtual interface
+    - private virtual interface
+- s2s vpn & DX
+  - s2s vpn: on-prem to aws; use public internet; encrypted
+  - DX: take a long time to build; private connection; physical connection; private network
+
+
+
 #### s3
 #### aws cli sdk and iam roles and policies
 #### s3 advanced
