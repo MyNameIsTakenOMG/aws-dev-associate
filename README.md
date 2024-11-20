@@ -148,7 +148,89 @@
 
 #### HA and scalability
 
-- 
+- scalability: vertical, horizontal
+- availability: goes hand in hand with horizontal scaling, (running system in at least 2 data centers)
+- ELB
+  - health check: done on a port and a endpoint
+  - types:
+    - CLB
+    - ALB:
+      - layer 7;
+      - http/2 and websocket;
+      - route to different target groups: ec2(or ec2 in asg), ecs, lambda, private ip
+      - fixed hostname
+      - to see the client ip, use header: `X-Forwarded-For`
+    - NLB: layer 4 (udp, tcp); handle millions of requests per requests; has `one static ip per az`; support EIP(helpful for whitelisting ip addresses)
+      - target groups: ec2, private ip, ALB,
+      - health check: tcp, http, https
+    - GWLB: layer 3; use `GENEVE` procotol on port `6081`
+      - manage a fleet of 3rd party network virtual appliance in aws
+      - firewalls, intrusion detection, deep packet inspection system
+      - target groups: ec2, private ip
+  - security group
+  - sticky sessions: works for clb, alb, nlb
+    - application-based cookies: created by targets(custom cookies) or load balancers(application cookies)
+    - duration-based cookies: created by load balancers
+  - cross-zone load balancing
+    - alb: enabled by default
+    - nlb: disabled by default, no free
+    - clb: disabled
+  - ssl/tls
+    - can manage certs using acm
+    - or upload your own certs
+    - https listener:
+      - must specify a default cert
+      - can optionally add a list of certs for multi domains
+      - client can use SNI(server name indication) to specify which hostname to reach
+      - alb and nlb: support multi https listeners; use sni
+      - clb: support only one ssl, 
+  - ssl -- SNI
+    - only works for alb and nlb, cloudfront
+  - connection draining(deregistration delay): time to complete `in-flight requests` while the instance is de-registering or unhealthy 
+- ASG
+  - a launch template
+  - cloudwatch alarms & scaling
+  - scaling policies:
+    - dynamic scaling:
+      - target tracking
+      - simple/step
+    - scheduled scaling
+    - predictive scaling
+  - metrics for scaling: `CPUUtilization`, `RequestCountPerTarget`, `Average Network In / Out`, or custom metrics
+  - scaling cooldowns: when a scaling activity happends, you are in the cooldown period(no launch or terminate instances)
+    - use Golden AMIs
+  - instance refresh:
+    - update launch template and re-create all ec2 instances
+    - using native feature: `instance refresh`
+    - setting minimum healthy percentage
+    - specify `warm-up` time
+ 
+
+#### rds and aurora and elasticache
+#### route53
+#### vpc
+#### s3
+#### aws cli sdk and iam roles and policies
+#### s3 advanced
+#### s3 security
+#### cloudfront
+#### containers
+#### elastic beanstalk
+#### cloudformation
+#### aws integration and messaging
+#### aws monitoring and troubleshooting and audit
+#### lambda
+#### dynamodb
+#### api gateway
+#### cicd
+#### serverless application model
+#### cdk
+#### cognito
+#### other serverless
+#### advanced identity
+#### security and encryption
+#### other services
+
 
 ### practice tests
 
