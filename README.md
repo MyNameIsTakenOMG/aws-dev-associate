@@ -406,6 +406,46 @@
 
 
 #### s3
+
+- buckets:
+  - regional service
+  - needs a global unique name
+- objects
+  - the key is the full path: prefix + object name
+  - max object size: 5tb
+  - muse use `multi-part upload` if size > 5gb
+- s3 security:
+  - user-based: iam policies
+  - resources-based:
+    - bucket policies
+    - object access control list -- fine-grained
+    - bucket access control list -- less common
+  - encryption
+- s3 static website hosting:
+  - make sure the bucket policy allows public access
+  - make sure the bucket name is the same as the record name
+- s3 versioning
+  - enable at bucket level
+- s3 -- replication
+  - must enable versioning
+  - cross-region replication
+  - same-region replication
+  - asynchronous copy
+  - using `s3 batch replication` to replicate existing objects
+  - can replicate `delete marker`
+  - there is no chaining replicaiton
+- s3 storage classes
+  - standard
+  - infrequent access:
+    - standard-IA
+    - one zone-IA
+  - glacier storage classes
+    - instant retrieval
+    - flexible retrieval
+    - deep archive
+  - intelligent-tiering
+
+
 #### aws cli sdk and iam roles and policies
 #### s3 advanced
 #### s3 security
