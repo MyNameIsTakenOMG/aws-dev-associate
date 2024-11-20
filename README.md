@@ -3,7 +3,7 @@
 ## road map
 - [table of lecture contents](#table-of-lecture-contents)
 - [lecture hands on](#lecture-hands-on)
-- [practice tests](#pratice-tests)
+- [practice tests](#practice-tests)
 - [review lectures and tests](#review-lectures-and-tests)
 
 ### table of lecture contents
