@@ -448,6 +448,43 @@
 
 
 #### aws cli sdk and iam roles and policies
+
+- ec2 instance metadata (IMDS)
+  - allow ec2 to `learn about themselves` without using an iam role
+  - can retrieve the iam role from the metadata, but not the iam policy
+- IMDS v2 and IMDS v1
+- MFA with CLI
+  - must create a temporary session using `sts getsessiontoken` api call
+- aws sdk
+- aws limits (quotas)
+  - api rate limits
+  - service quotas (service limits)
+- exponential backoff
+  - use exponential backoff if you encounter `ThrottlingException`
+  - retry logic has been included in aws sdk (not for conditional check)
+    - must only implement the retry for 5xx errors and throttling
+    - do not implement on 4xx client errors
+- aws cli credentials provider chain
+  - command line options
+  - environment variables
+  - cli credentials file -- aws configure: `~/.aws/credentials`, `~/.aws/config`
+  - container credentials for ecs tasks
+  - instance profile credentials for ec2 instance profiles
+- aws sdk default credentials provider chain(java)
+  - java system properties
+  - environment variables: access_key, access_secret
+  - default credential profile file: for example `~/.aws/credentials`
+  - ecs container credentials for ecs containers
+  - instance profile credentials for ec2 instances
+- aws credentials best practices
+  - never store aws credentials in your code
+  - if working with aws, use iam roles
+  - if working outside of aws, use environment variables/ named profiles
+- sign aws api requests
+  - if use sdk or cli, the requests are signed for us
+
+
+
 #### s3 advanced
 #### s3 security
 #### cloudfront
