@@ -287,6 +287,94 @@
 
   
 #### route53
+
+- dns terminologies:
+  - domain registar
+  - dns records
+  - zone file: contains dns records
+  - name server: resovle dns queries
+  - TLD
+  - SLD
+- route53:
+  - 100 SLA
+  - health check
+  - records:
+    - domain/subdomain name
+    - record type
+    - value
+    - routing policy
+    - ttl
+  - records types
+    - A
+    - AAAA
+    - Alias
+    - CNAME
+    - NS
+  - hosted zones
+    - public
+    - private
+    - $0.5 per month per hosted zone
+  - TTL:
+    - except for Alias records
+    - high ttl or low ttl
+  - CNAME vs Alias
+    - CNAME: not for TLD
+    - Alias: TLD or non-TLD, point to aws resources
+  - Alias records:
+    - map hostnames to aws resources
+    - no ttl
+    - TLD or non-TLD
+    - targets:
+      - **Note**: not for ec2 instances
+      - elb
+      - cloudfront
+      - api gateway
+      - EB
+      - s3 websites
+      - vpc interface endpoint
+      - global accelerator
+      - route53 records in the same hosted zone
+  - health check:
+    - http health check only for public resources
+    - but can integrate with cloudwatch metrics to monitor private resources
+    - automated dns failover
+      - monitor an endpoint:
+        - around 15 global health checkers
+        - can be configured to only check on the first 5120 bytes of the responses
+      - calculated health checks (similar to composite alarms)
+      - monitor cloudwatch alarms
+  - traffic flow:
+    - visual editor to manage complex routing decision trees
+    - can be saved as traffic flow policy and applied to different route 53 hosted zones
+  - routing policies
+    - simple: no health check; route traffic to a single resource
+    - weighted:
+      - dns records must have the same name and type
+      - health check
+      - all zero, then traffic evenly distributed
+      - if zero, then no traffic sent
+      - weights no need to be 100 when summed up
+    - latency-based:
+      - health check (failover feature)
+      - helpful when latency is a priority
+    - failover(active-passive)
+    - geolocation:
+      - should have a default record
+      - health check
+    - geoproximity
+      - shift traffic to resources based on **bias**
+      - must use **route 53 traffic flow**
+    - ip-based routing
+      - routing is based on ip addresses
+      - provide a list of CIDRs for clients
+    - multi-value:
+      - health check
+      - same record name and type
+- route 53 and other dns registar
+  - register a domain name and then use route 53 name servers
+
+
+
 #### vpc
 #### s3
 #### aws cli sdk and iam roles and policies
