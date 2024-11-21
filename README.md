@@ -670,6 +670,132 @@ including them in the Cache Key (no duplicated cached content)
 
 
 #### containers
+
+- overview:
+  - apps are packaged in containers that can run on any os
+  - docker image repositories:
+    - docker hub
+    - aws ecr
+- docker vs virtual machines
+  - docker containers are sharing the resources
+- docker containers management on aws
+  - aws ecs
+  - aws eks
+  - aws fargate: serverless container platform, working with ecs and eks
+  - ecr: storing container images
+- aws ecs
+  - ec2 launch type
+    - each ec2 must have ecs agent to register in the ecs cluster
+    - aws takes care of starting / stopping containers
+    - ecs tasks: launch ec2 instances on ecs clusters
+  - fargate launch type
+    - no ec2 instances to manage
+    - just take care of task definitions
+    - aws runs ecs tasks for your based on cpu / ram you need
+    - to scale, just increase the number of tasks
+  - iam roles
+    - ec2 instance profile: (ec2 launch type only)
+      - used by ecs agent
+      - make api calls to ecs service
+      - send logs to cloudwatch logs
+      - pull images from ecr
+      - reference data in secrets manager or ssm parameter store
+    - ecs task role
+      - each task has a role
+      - defined in task definition
+  - load balancer integrations
+    - alb: most use cases
+    - nlb: only for high thoughput
+    - clb: not recommended
+  - data volumes (efs: serverless)
+    - mount EFS onto ecs tasks
+    - works for ec2 and fargate types
+    - **note**: s3 cannot be used as file system
+  - ecs auto scaling
+    - uses aws application auto scaling
+    - based on : cpu, ram, or alb requests count per target
+    - target tracking
+    - step scaling
+    - scheduling schaling
+    - ecs auto scaling (task level)
+    - ec2 auto scaling (instance level)
+  - ec2 launch type -- auto scaling ec2 instances
+    - scaling by adding ec2 instances
+    - asg
+    - ecs cluster capacity provider: paired with asg
+  - rolling updates
+    - min: minimum healthy percent (relative to the actual running capacity: 100%) 
+    - max: maximum percent (actual running capacity + allowed to create tasks: extra)
+  - integrated with eventbridge:
+    - on-schedule
+    - on-demand
+  - integrated with sqs
+  - task definitions:
+    - json form to tell ecs how to run a docker container
+    - cpu, ram, iam role, image, port, logging, env, networking
+    - up to 10 containers in one task definition
+  - load balancing:
+    - ec2 launch type:
+      - dynamic host port mapping if the container port is defined in the task definition
+      - alb will find the right port
+      - must allow ec2 security group to any port from alb security group
+    - fargate
+      - each task has a private ip
+      - only container port
+      - one iam role per task definition
+  - environment variables
+    - hardcoded
+    - ssm parameter store
+    - secrets manager
+    - env files(bulk) -- s3
+  - data volumes (bind mounts)
+    - share data between multi container in the same task definition
+    - works for both ec2 and fargate
+  - task placement (only for ec2 launch type)
+    - task placement contraints
+      - distinctInstance: tasks are placed on different instances
+      - memberOf: placed on ec2 instances with a specified expression; or uses the cluster query language(advanced)
+    - task placement strategies: best effort
+      - binpack: aim the least available amount of cpu and ram
+      - random
+      - spread: tasks are spread evenly based on the specified value: az
+      - or mix them up
+    - task placement process:
+      - identify the proper ec2 instance
+      - identify the instance with task placement contraints
+      - identify the instance with task placement strategies
+      - select the instance
+- ecr
+  - container images registry
+  - integrated with ecs
+  - public and private
+- aws copilot
+  - help run apps on AppRunner, ECS, and fargate
+  - help focus on building apps rather than setting up infra
+  - provision all required infra for containerized apps
+  - auto-deploy using codepipeline
+  - deploy to multiple env
+  - troubleshooting, logs, health status
+- aws eks
+  - aws managed kubernates cluster
+  - eks supports ec2 and fargate
+  - cloud-agnostic
+  - collect logs and metrics using cloudwatch container insights
+  - Node Types:
+    - managed node group
+    - self-managed nodes: you create nodes and register to the cluster and then managed by asg
+    - aws fargatea
+  - data volumes
+    - need to specify storageClass manifest on your eks cluster
+    - leverages a container storage interface compliant driver
+    - support:
+      - ebs
+      - efs (works with fargate)
+      - fsx for lustre
+      - fsx for netapp ontap
+
+
+
 #### elastic beanstalk
 #### cloudformation
 #### aws integration and messaging
