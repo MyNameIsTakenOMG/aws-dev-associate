@@ -570,6 +570,105 @@
 
   
 #### cloudfront
+
+- overview:
+  - cdn
+  - DDoS protection, integrated with aws shield, aws waf
+- origins
+  - s3 buckets:
+    - OAC
+  - custom origins:
+    - s3 websites
+    - alb
+    - ec2
+    - any http backend
+- cloudfront vs s3 cross-region replication
+  - cloudfront: good for static content availablt anywhere
+  - s3: good for dynamic content available in a few regions
+- caching
+  - at edge locations
+  - identify each object using `cache key`
+  - increase the cache hit ratio and decrease requests to the origin
+  - invalidation: `CreateInvalidation` api
+- cache key:
+  - unique identifiers for each object
+  - hostname + resource portion of the url
+  - can add other elements: http headers, cookies, query strings using `cache policies`
+- cache policies:
+  - http headers:
+    - none
+    - whitelist
+  - cookies
+  - query strings
+    - none
+    - whitelist
+    - inlude all-except
+    - all (not good, too many)
+  - control TTL, can set by the origin using `Cache-Control` header
+  - custom policies support
+  - **note**: all http headers, cookies, query strings in `cache key` are included in origin requests
+- origin request policy
+  - Specify values that you want to include in origin requests without
+including them in the Cache Key (no duplicated cached content)
+  - can include: http headers, cookies, query strings
+  - ability to add cloudfront http headers and custom headers to an origin requst that was not included in the viewer request
+  - support custom policy
+- cache invalidations
+  - we can force an entire or partial cache refresh by performing cloudfront invalidations
+  - can specify invalidation path: `*`, `/images/*`
+- cache behaviors
+  - configure different settings based on the content type or path pattern: `/api/*`, `/*`
+  - the default cache behavior is always the last to be process and is always `/*`
+- geo restriction
+  - restrict who can access your distribution:
+    - allowlist
+    - blocklist
+- signed url / signed cookies (normally after authentication and authorization)
+  - for example, only premium users can access paid shared content
+  - can attach a policy with:
+    - url expiration
+    - ip ranges
+    - trusted signers (which aws accounts can create signed url)
+  - signed url: individual files
+  - signed cookies: multi files
+- cloudfront signed url vs s3 pre-signed url
+  - cloudfront:
+    - filter by ip, path, data, expire
+    - define access path
+    - only root user can manage it
+    - utilize caching features
+  - s3:
+    - uses iam key
+    - issue a request as the person who pre-signed the url
+- cloudfront signed url process
+  - signers:
+    - a trusted key group(recommended)
+    - an aws account that has a cloudfront key pair(not recommended, should not use root account)
+  - can create multi key groups
+  - generate key pair
+- price classes
+  - all
+  - 200: most regions, exluding the most expensive ones
+  - 100: only the least expensive ones
+- multiple origins
+  - route to different origins based on the content type
+  - based on path pattern: `/images/*`, `/api/*`
+- origin groups
+  - increate HA and do failover
+  - one origin group: one primary and one secondary origin
+- field level encryption
+  - protect sensitive user info for each request
+  - encryption at the edge locations
+  - specify fields(max 10) to encrypt and public key used for encryption
+  - decryption at the web server side
+- real-time logs
+  - using KDS
+  - choose:
+    - sampling rate
+    - specify fields and cache behaviors(path patterns)
+
+
+
 #### containers
 #### elastic beanstalk
 #### cloudformation
