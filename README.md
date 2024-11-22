@@ -782,10 +782,10 @@ including them in the Cache Key (no duplicated cached content)
   - cloud-agnostic
   - collect logs and metrics using cloudwatch container insights
   - Node Types:
-    - managed node group
+    - managed node group: create and manage nodes(ec2 instances) for you
     - self-managed nodes: you create nodes and register to the cluster and then managed by asg
     - aws fargatea
-  - data volumes
+  - data volumes (file systems)
     - need to specify storageClass manifest on your eks cluster
     - leverages a container storage interface compliant driver
     - support:
@@ -797,6 +797,69 @@ including them in the Cache Key (no duplicated cached content)
 
 
 #### elastic beanstalk
+
+- overview:
+  - provision underlying resources: elb, asg, ec2, rds,...
+  - managed service
+  - web server tier & worker tier
+  - devs only need to take care of application codes
+  - still have full control over the configuration
+- components
+  - applications
+  - application versions
+  - environments: each application version
+- deployment modes:
+  - single instance
+  - HA
+- deployment options for updates
+  - all at once
+  - rolling (manual rollback)
+  - rolling with addtional batches (manual rollback)
+  - immutable: create a new asg with new versions, then swap to the new asg; high cost, long deployment, quick rollback(just terminate the asg, good for prod)
+  - blue/green: (not a direct feature, need to work with route53 using weight policy and then swap urls when ready) create a new environment and switch over when ready
+  - traffic splitting: (using the alb to do traffic splitting) canary testing -- send small portion of traffic to the new deployment. can trigger an automated rollback(very quick), new instances migrate to the original asg, old verion will be terminated. deployment health is moinitored
+- deployment process
+  - describe dependencies
+  - package code as zip and describe dependencies
+  - use console or cli to upload zip and then deploy
+- lifecycle policy
+  - EB can store up to 1000 app versions
+  - to phase out old app versions, use lifecycle policy
+    - based on time
+    - based on space
+  - the in-use version cannot be deleted
+  - Option not to delete the source bundle in S3 to prevent data loss
+- extensions
+  - a zip file containing our code must be deployed to EB
+  - all parameters set in UI can be configured with code using files
+  - requirements:
+    - must be in the path `.ebextensions/` directory in the root of source code
+    - yml/json
+    - .config extensions (exmaple: logging.config)
+    - able to add other aws resources
+    - able to modify some default settings using : `option_settings`
+- under the hood
+  - using cloudformation
+  - can define cloudformation resources in your .ebextensions directory
+- cloning
+  - clone an environment
+  - all resources and configuration are preserved
+    - data in db is not preserved
+- EB migration: load balancer
+  - the load balancer type cannot be changed(clb, nlb,alb)
+  - create a new environment with different type of load balancer, then swap CNAME or route 53 update
+- EB with RDS
+  - database lifecycle is tied to the EB environment lifecycle
+  - good practice is to create a rds instance separately and provide our environment with the connection string
+- EB migration: decouple RDS
+  - create a snapshot of db (safeguard)
+  - go to rds console to enable deletion protection
+  - create a new environment but without rds, instead, just point to the existing rds instance
+  - then perform CNAME swap (blue/green) or route53 update
+  - terminate the old environment (rds will stay)
+  - delete the cloudformation stack(in DELETE_FAILED state, cuz the rds unable to delete)
+
+
 #### cloudformation
 #### aws integration and messaging
 #### aws monitoring and troubleshooting and audit
