@@ -861,6 +861,66 @@ including them in the Cache Key (no duplicated cached content)
 
 
 #### cloudformation
+
+- benefits:
+  - infra-as-code: good for version control
+  - cost: good for cost management using tags (saving strategy)
+  - productivity: quickly recreation
+  - separation of concerns: multi stacks
+- process:
+  - template
+  - s3 bucket
+  - aws cloudformation
+  - create stack to provision resources
+- deployment
+  - manual
+  - automated
+- cloudformation -- resources
+- cloudformation -- parameters
+  - to reference a parameter: using `!Ref`
+  - pseudo parameters (provided by aws)
+- cloudforamtion -- mappings
+  - use `!FindInMap` to return a value from the map
+- cloudformation -- outputs
+  - declare optional outputs
+  - using `Export` section
+  - using `!ImportValue` to reference
+- cloudformation -- conditions
+  - intrinsic functions(logical)
+  - can be applied to resources, outputs,... but not `parameters`
+- cloudformation -- intrinsic functions
+  - !GetAtt: get the attributes of the resources
+  - !Base64: use to encode user data for ec2 for example (convert string to base64)
+  - condition functions
+- rollbacks
+  - creation fails
+  - update fails
+  - rollback fails: manual fix, then call `ContinueUpdateRollback` api to continue rollback
+- service role
+  - iam users with the iam role which include `iam:PassRole` permission
+  - make sure iam users have the least privileges
+- cloudformatin capabilities
+  - CAPABILITY_NAMED_IAM & CAPABILITY_IAM
+  - CAPABILITY_AUTO_EXPAND
+  - InsufficientCapabilitiesException
+- deletion policy -- for stack resources
+  - delete: won't work with s3 bucket if it is empty
+  - retain: work with resources
+  - snapshot
+- stack policy -- for stack updates
+  - define update actions that are allowed during stack updates
+  - must explicitly allow
+- termination protection -- for stack deletes
+- custom resources
+  - define custom resources
+  - have custom logic (scripts) via lambda
+  - service token specify where to send the requests(lambda, sns)
+  - use case: empty s3 bucket before deleting it
+- stacksets
+  - create, update, delete stacks across multi accounts and regions
+  - can be applied within an aws organization
+
+
 #### aws integration and messaging
 #### aws monitoring and troubleshooting and audit
 #### lambda
