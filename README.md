@@ -935,6 +935,87 @@ including them in the Cache Key (no duplicated cached content)
 #### security and encryption
 #### other services
 
+- aws ses
+  - fully managed
+  - allow inbound/outbound emails
+  - reputation dashboard, anti-spam feedback, performance insights
+  - Supports DomainKeys Identified Mail (DKIM) and Sender Policy Framework (SPF)
+  - Flexible IP deployment: shared, dedicated, and customer-owned IPs
+  - Send emails using your application using AWS Console, APIs, or SMTP
+  - Use cases: transactional, marketing and bulk email communications
+- aws opensearch service
+  - successor to aws elasticsearch
+  - with opensearch, we can search any field, or partially matches
+  - complement to other databases like dynamodb
+  - managed cluster or serverless cluster
+  - does not natively support SQL (via a plugin)
+  - come with dahsboard
+  - integrated with kdf, iot, cloudwatch logs
+  - kds(real time with a lambda) or kdf(near real time with a lambda doing data transformation)
+  - cloudwatch logs: subscription filter + lambda/kdf
+- aws athena
+  - serverless query service --> s3
+  - using standard sql
+  - used with quicksight for data visualization
+  - performance improvement:
+    - columnar data(less scan)
+    - compress data for smaller retrievals
+    - use larger file(> 128mb) to minimize overhead
+    - partition datasets
+  - federated query
+    - use `data source connector` running on aws lambda
+- aws managed streaming for apache kafka
+  - alternative to aws kinesis
+  - fully managed kafka on aws
+    - allow to create, update, delete clusters
+  - msk serverless
+    - without mananing the capacity
+  - aws kds vs aws msk
+    - kds:
+      - 1mb message size
+      - data stream with shards
+      - shard splitting & merging
+      - encryption in-transit and at rest
+    - msk:
+      - 1mb default, up to 10mb message size
+      - kafka topics with partitions
+      - can only add partition to a topic
+      - encryption in-transit and at rest
+    - consumers:
+      - kda
+      - aws glue for ETL
+      - lambda
+      - ec2, ecs,eks
+- aws acm
+  - ssl/tls certificates
+  - auto tls renewal
+  - integrated with
+    - EB
+    - cloudfront distro
+    - api gateway
+    - alb     
+- aws private certificate authority (CA)
+  - managed service to create private CA (root, subordinaries)
+  - issue x.509 certificates
+  - certificates only trusted within your organization(not public)
+  - work for the services that are integrated with acm
+  - use cases:
+    - authenticate users, computers, api endpoints, iot
+    - enterprises build public key infra
+    - encrypt tls communication, cryptographically signing code
+- aws macie
+  - detect PII or users sensitive data in s3
+- aws appConfig
+  - configure, validate, and deploy dynamic configurations
+  - used with apps on ec2, lambda, ecs, eks,...
+  - gradually deploy changes and rollback if need
+- cloudwatch evidently
+  - Safely validate new features by serving them to a specified % of your users
+  - Launches (= feature flags): enable and disable features for a subset of users
+  - Experiments (= A/B testing): compare multiple versions of the same feature
+  - Overrides: pre-define a variation for a specific user
+  - Store evaluation events in CloudWatch Logs or S3
+
 
 ### lecture hands on
 
