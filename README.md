@@ -922,6 +922,195 @@ including them in the Cache Key (no duplicated cached content)
 
 
 #### aws integration and messaging
+
+- decouple your applications(scale independently from our applications):
+  - sqs: queue model
+  - sns: pub/sub model
+  - kinesis: real-time streaming model
+- sqs:
+  - standard queue:
+    - unlimited throughput, unlimited number of messages in queue
+    - low latency
+    - 256kb max size of each message
+    - retention: 4 - 14 days
+    - best-effort, at least once delivery
+  - producing messages
+    - sendMessage api call
+    - message is persisted until a consumer deletes it
+  - consuming messages
+    - ec2, lambda,...
+    - poll messages (up to 10)
+    - process messages
+    - delete message using deleteMessage api call
+  - multi ec2 consumers
+    - poll and process messages in parallel
+    - scale consumers horizontally to increase throughput
+  - with asg
+    - scaling based on an alarm set on the cloudwatch metric: ApproximateNumberOfMessages
+  - decouple between application tiers
+  - security
+    - encryptioin in-transit and at rest
+    - or client side encryption
+  - queue access policy
+    - resource-based policy
+  - message visibility timeout
+    - a message is invisible when it is polled
+    - by default 30 seconds, then after that, it becomes visible again
+    - consumer call the ChangeMessageVisibility api    
+  - dead letter queue
+    - a message will be sent to a dlq after being failed to be processed
+    - configure `MaximumReceives`
+    - standard queue -- standard dlq queue
+    - fifo queue -- fifo dlq queue
+    - good to set retention of 14 days in the dlq
+    - redrive to source
+      - when our code is fixed, we can redrive messages from dlq to the source queue(or any other queue) in batches without writing custom code
+  - delay queue
+    - delay a message up to 15 mins
+  - long polling
+    - can optionally wait if there is no message in the queue
+    - decrease the number of api calls
+    - is preferable to short polling
+    - can enable at queue level
+  - extended client
+    - max size of each message is 256kb
+    - to send data like 1GB, use `SQS extended client`(java library)
+  - must know api
+    - CreateQueue
+    - DeleteQueue
+    - PurgeQueue
+    - SendMessage, ReceiveMessage, DeleteMessage
+    - MaxNumberOfMessages (up to 10, for receiving messages api)
+    - ReceiveMessageWaitTimeSeconds: long polling
+    - ChangeMessageVisibility
+    - batch apis for sending, deleting, changing messages visibility: help decrease your costs
+  - fifo queue
+    - limited throughput: 300 per second, 3000 per second with batch
+    - exactly once delivery
+    - messages processed in order
+    - deduplication
+      - interval is 5 min
+      - two methods:
+        - Content-based deduplication: will do a SHA-256 hash of the message body
+        - Explicitly provide a Message Deduplication ID
+      - prevent producers from sending duplicated messages
+    - message grouping
+      - same value for MessageGroupID in fifo queue
+      - ordering inside the group is kept
+      - ordering across groups is not guaranteed
+      - each group has different consumer
+- aws SNS
+  - pub/sub: send one message to many receivers
+  - one event producer can only send messages to one sns topic
+  - many event receivers or subscribers can listen to one sns topic
+  - Each subscriber to the topic will get all the messages (note: new feature to filter messages)
+  - integrated with many aws services as message senders
+  - how to publish
+    - topic publish using sdk
+    - direct publish for mobile apps sdk
+  - security: similar to sqs
+  - sns + sqs: fan out
+    - can add more sqs subscribers over time
+  - fifo topic
+    - similar to fifo queue
+    - message group id (all messages ordered in the same group)
+    - deduplication
+    - **note**: can have sqs standard or fifo as subscribers
+    - limited throughput
+  - message filtering
+    - subscribers use it to filter messages based on their needs
+    - otherwise all message will be received
+- aws kinesis
+  - collect, process, and analyze streaming data in real-time
+  - kinesis data streams
+    - retention: 1-365 days
+    - support replay
+    - data in kinesis is immutable, cannot be deleted
+    - data with the same partition key goes to the same shard (ordering)
+    - capacity modes
+      - provisioned mode:
+        - choose number of shards
+        - each shard: 1mb in , 2mb out per second
+      - on-demand mode:
+        - default capacity provisioned: 4mb in or 4000 records per second
+    - security
+      - using iam policy
+      - encryption in-transit and at rest or choose client-side encryption
+      - vpc endpoint is available for kinesis
+      - monitoring using cloudtrail
+    - producers
+      - data record: sequence number; partition key, data blob
+      - aws sdk, kinesis producer libracy(KCL), kinesis agent
+      - putRecord api
+      - 1mb or 1000 records per sec per shard
+      - use batching with putRecord api
+      - use highly distributed partition key to avoid hot partition
+      - `ProvisionedThroughputExceeded`
+        - use highly distributed partition key
+        - increase shards
+        - retry with exponential backoff
+    - consumers
+      - max 5 consumers per shard
+      - lambda, kda, kdf, kcl, custom consumer(aws sdk -- classic or enhanced fan-out)
+      - custom consumer
+        - classic: multi consumers share 2mb out; max 5 getRecord api/sec
+        - enhanced fan-out: multi consumers have 2mb out each
+      - lambda
+        - support classic and enhanced fan-out consumers
+        - read records in batches
+        - can configure batch size and batch window
+        - retry
+        - can process up to 10 batches per shard simultaneously
+      - KCL
+        - java library
+        - each shard to be to read by only one kcl instance
+        - progress is checkpointed into dynamodb
+        - can run on ec2, on-prem, EB
+        - track other workers and share the work amongst shards using dynamodb
+        - records are read in order at shard level
+        - one kcl can read multi shards
+    - kinesis operation -- shard splitting
+      - used to increase stream capacity (1mb in per shard)
+      - divide hot shard
+      - no auto scaling, just manual
+      - cannot split into more than 2 shards at a time
+      - the old shard will be closed and deleted once the data is expired
+    - kinesis operation -- merging shards
+      - decrease the stream capacity and save costs
+      - group two shards with low traffic(cold shards)
+      - cannot merge more than 2 shards at a time
+      - the old shard will be closed and deleted once the data is expired
+  - kinesis data firehose
+    - fully-managed, auto scaling, serverless
+    - pay for data going into firehose
+    - near real time
+      - buffer size: minimum 1mb
+      - buffer interval: 0 - 900 sec
+    - support data multi format, conversions, transforms, and compression
+    - support custom data transform using lamdba
+    - can send failed data to s3 bucket
+    - no data storage
+    - no replay
+  - kinesis data analytics
+    - sql application:
+      - real time analytics on kds and kdf using sql
+      - add reference data from s3 to enrich streaming data
+      - fully-managed, serverless
+      - auto scaling
+      - pay-as-you-go
+      - output: kds, kfd
+    - apache flink( java, scala, or sql)
+      - source: kds, aws msk
+      - no kdf
+  - kinesis video streams
+  - ordering data into kinesis using partition key
+  - ordering data into sqs using fifo queue (no need group ID, unlike sns), with `only one consumer`
+    - to add more consumers, use group ID, similar to partition key in kinesis
+  - kinesis vs sqs ordering
+
+
+
+
 #### aws monitoring and troubleshooting and audit
 #### lambda
 #### dynamodb
@@ -1007,6 +1196,7 @@ including them in the Cache Key (no duplicated cached content)
   - detect PII or users sensitive data in s3
 - aws appConfig
   - configure, validate, and deploy dynamic configurations
+    - no need to restart the application
   - used with apps on ec2, lambda, ecs, eks,...
   - gradually deploy changes and rollback if need
 - cloudwatch evidently
