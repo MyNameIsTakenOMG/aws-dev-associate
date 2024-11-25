@@ -1322,6 +1322,222 @@ including them in the Cache Key (no duplicated cached content)
 
 
 #### lambda
+
+- benefits:
+  - cheap
+  - integrated with a lot aws servcies
+  - support multi programming languages
+  - increase ram will improve cpu and network
+    - once reach 1,792 mb for ram, we have a whole vCPU,
+    - after 1,792mb, consider using multi-threading 
+- synchronous invocation
+  - cli, sdk, alb, api gateway
+  - user invoke
+  - service invoke
+- integrated with alb
+  - lambda function must be registered in a target group
+- alb + lambda -- permission
+  - lambda resource policy
+- alb multi-header values
+  - When you enable multi-value headers, HTTP headers and query string parameters that are sent with multiple values are shown as arrays within the AWS Lambda event and response objects.
+- asynchronous invocations
+  - s3, sns, eventbridge, ses, IoT,...
+  - events are placed in an event queue
+  - make sure the processing is idempotent
+- s3 event notifications
+  - simple s3 event pattern -- metadata sync
+- event source mapping
+  - kds
+  - sqs, sqs fifo
+  - dynamodb stream
+  - Common denominator: records need to be polled from the source
+  - lambda function is invoked synchronously
+- streams and lambda (kinesis and dynamodb)
+  - An event source mapping creates an iterator for each shard, processes items in order
+  - configure batch size and batch window to lower traffic
+  - can also process up to 10 batches in parallel
+  - in-order processing is still guaranteed for each partition key
+  - error handling
+    - by default, one single error will cause whole batch to be reprocessed
+    - but can configure to use `partial batch response`
+    - discard events can go to a destination
+- event source mapping sqs & sqs fifo
+  - recommend: set queue visibility timeout to 6x the timeout of your lambda function
+  - to use a dlq
+  - support fifo queues, scaling up to the number of active message groups
+  - Lambda deletes items from the queue after they're processed successfully.
+  - Occasionally, the event source mapping might receive the same item from the queue twice, even if no function error occurred.
+  - You can configure the source queue to send items to a dead-letter queue if they can't be processed.
+- lambda event mapper scaling
+  - kinesis data streams and dynamodb stream
+    - one lambda invocation per stream shard
+    - if in parallel, up to 10 batches processed per shard simultaneously
+  - sqs standard
+    - add 60 lambda instances per minute to scale
+    - up to 1000 batches in parallel
+  - sqs fifo
+    - group ID
+    - scale to the number of active message groups
+- lambda event and context object
+  - event:
+    - contains the data(from calling service) to be processed
+  - context:
+    - provides info about the invocation, function, and runtime environment
+- lambda -- destinations
+  - can configure to send result to destination
+  - `asynchronous invocations`:
+    - sqs
+    - sns
+    - lambda
+    - eventbridge bus
+  - event source mapping: for discarded event batches
+  - **note**: events can be sent to dlq directly from sqs
+- lambda execution role
+  - grant lambda to access other aws resources
+  - when using event source mapping, lambda uses a role to read event data
+- resource-based policies
+  - grant lambda function access to other services or aws accounts
+- environment variables
+  - adjust the function behavior without updating code
+- lambda logging & monitoring
+  - cloudwatch logs: make sure lambda functions has permission to write logs to cloudwatch logs
+  - cloudwatch metrics
+- tracing with x-ray
+  - enable x-ray active tracing
+  - lambda does have a x-ray daemon running under the hood
+  - make sure use x-ray sdk and initialize it
+  - make sure the lambda has the right permission for x-ray (a managed policy)
+- customization at the Edge
+  - edge functions:
+    - a code attached to the cloudfront distro
+  - cloudfront provides two types:
+    - cloudfront functions
+    - lambda@edge
+    - already deployed globally
+    - fully managed
+    - customize cdn content
+    - use cases:
+      - website security and privacy
+      - seo
+      - bot mitigation
+      - a/b testing
+      - auth
+      - ...
+  - cloudfront functions
+    - lightweight functions
+    - for high-scale, latency-sensitive cdn customization
+    - viewer request: cloudfront receives the requests from clients
+    - viewer response: before cloudfront forwards the response to the viewer
+    - a native feature
+  - lambda@edge
+    - scale to 1000 requests per second
+    - used to change cloudfront requests and responses:
+      - viewer requests: after cloudfront receives the request from client
+      - viewer response: before cloudfront forwards the response to the client
+      - origin requests: the request before cloudfront forwards to the origin
+      - origin response: after cloudfront receives the response from the origin
+    - author your lambda in one aws region, then cloudfront replicate to its locations 
+  - cloudfront function vs lambda@edge
+    - cloudfront function: cache key normalize; header modify; url rewrite; auth
+    - lambda@edge: longer execution time, code depends on a 3rd libraries; able to access external services; file system access
+- lambda with VPC
+  - by default, a lambda is outside of your vpc, in the aws-owned vpc. thus cannot access private resources
+  - then must specify subnet and sg
+  - then lambda will create an EIP
+  - internet access:
+    - deploy in a public subnet does not give it a public ip
+    - deploy in a private subnet + nat gateway and internet gateway
+- lambda function configuration
+  - ram:
+    - at 1792mb, one full vCPU
+    - after 1792mb, need to use multi-threading in your code
+  - if computation heavy, then increase ram
+- lambda execution context
+  - temporary runtime environment
+  - great for database connection, http clients or sdk client initialization
+  - will be maintained for some time for other lambda invocation (re-use)
+  - the context includes the /tmp directory
+- the /tmp directory
+  - download a big file
+  - need disk to do some task
+  - max size 10gb
+  - remain when execution context is frozen
+- lambda layers
+  - externalize dependencies for re-use
+- lambda file system mounting
+  - if lambda is in a vpc, then it can access efs
+  - must use efs access point
+  - limit: efs connection limit and connection burst limits
+- lambda concurrency and throttling
+  - limit: 1000 concur
+  - can set `reserved concur` at function level
+  - can increase limit by opening a ticket
+- cold starts & provisioned concur
+  - provisioned: is already allocated before the function gets called. no cold start
+- function dependencies
+  - the aws sdk comes by default for every lambda invocation, so no need to bundle the aws-sdk
+- lambda and cloudformation
+  - inline: use Code.ZipFile, cannot have dependencies
+  - through s3: must specify the s3 zip location
+- lambda container images
+  - deploy lambda function as a container image (up to 10gb) to ecr
+  - can test the container locally using lambda runtime interface emulator
+  - unified workflow to build apps
+  - best practices:
+    - use aws-provided base image
+    - use multi-stage builds
+    - build from stable to frequently changing
+    - use a single repo for functions with large layers
+- lambda versions
+  - the $latest
+  - versions: immutable, have their own arn
+- lambda aliases
+  - pointers to lambda versions
+  - enable canary deployment
+- lambda & codedeploy
+  - codedeploy help automate traffic shift for lambda alias
+  - integrated with SAM
+  - deployment strategies:
+    - linear: increase traffic every x min to 100%
+    - canary: try x then 100%
+    - allAtOnce
+  - appspec yml
+    - name
+    - alias
+    - currentversion
+    - targetversion
+- lambda -- function url
+  - can be applied to alias or $latest
+  - throttle your function by using reserved concur
+  - security:
+    - resource-based policy
+    - cors
+    - authType: configure public access
+      - none: allow public access and unauthenticated access
+        - resource-based policy is always in effect
+      - aws_iam: identity-based policy and resource-based policy are evaluated
+        - same account: Identity-based Policy OR Resource-based Policy as ALLOW
+        - cross account: Identity-based Policy AND Resource Based Policy as ALLOW
+- lambda and codeguru profiling
+  - using codeguru profiler for your lambda function to check performance
+  - support java and python
+- aws lambda limits to know - per region
+  - execution
+    - max timeout: 15 min
+    - environment variables: 4kb
+  - deployment
+    - zip: 50mb
+    - uncompressed: 250mb
+    - can use /tmp to load other files at startup
+- lambda best practiecs
+  - perform heavy-duty work outside of your lambda
+  - use env variables
+  - minimize deployment package size
+  - avoid using recursive code, never have a lambda call itself
+
+
+
+
 #### dynamodb
 #### api gateway
 #### cicd
