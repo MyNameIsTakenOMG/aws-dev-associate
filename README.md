@@ -1110,8 +1110,217 @@ including them in the Cache Key (no duplicated cached content)
 
 
 
-
 #### aws monitoring and troubleshooting and audit
+
+- importance of monitoring
+  - deploy applications:
+    - safely
+    - automated
+    - infra-as-code
+    - leverage aws managed services
+  - app users:
+    - latency
+    - outage
+    - communicate with it support
+    - troubleshooting and remediation
+  - internal monitoring
+    - can we prevent issues before they happen
+    - performance and cost
+    - trends(scaling patterns)
+    - learning and improvement
+- monitoring in aws
+  - aws cloudwatch
+    - metrics
+    - logs
+    - events
+    - alarms
+  - aws x-ray
+    - troubleshooting application performance and errors
+    - distributed tracing of microservices
+  - aws cloudtrail
+    - api calls
+    - auditing
+- cloudwatch metrics
+  - for every aws service
+  - metric is a variable
+  - belong to namespaces
+  - determined by dimensions
+  - have timestamps (at second granularity, cloudwatch will aggregate multi data points if they are in the same timestamp)
+  - can create custom dashboards
+- ec2 detailed monitoring
+  - 1 min interval
+  - will scale faster when using asg
+  - aws free tier allows 10 detailed monitoring metrics
+- custom metrics
+  - possible to send custom metrics
+  - example, memory usage, disk space, number of logged in users,...
+  - can use dimensions to segment metrics
+  - metric resolution:
+    - standard: 1min
+    - high resolution: 1/5/10/30 seconds
+    - **note**: accept metric data points two weeks in the past and 2 hrs in the future
+- cloudwatch logs
+  - log groups
+  - log stream
+  - log expiration
+  - cloudwatch logs can be sent to s3, kds, kdf, lambda, opensearch
+  - encrypted by default
+  - can set kms custom key
+  - sources:
+    - sdk, cloudwatch agent,
+    - EB
+    - ecs
+    - aws lamdba
+    - api gateway
+    - cloudtrail
+    - route53
+- cloudwatch log insights
+  - search and analyze log data
+  - can query multi log groups in different aws accounts
+  - it is a query engine, not a real-time engine
+- cloudwatch log -- s3 export
+  - can take up to 12 hrs, not near real time
+- cloudwatch log subscriptions
+  - real-time log events
+  - lambda, kdf, kds
+  - subscription filter
+  - cross-account subscription
+- cloudwatch logs aggregation multi-account & multi-region
+- cloudwatch logs for ec2
+  - need to run cloudwatch agent with iam permission
+  - cloudwatch agent can be set on-prem
+- cloudwatch logs agent & unified agent
+  - unified agent: new version
+    - centralized configure using ssm parameter store
+    - collect additional system-level metrics
+    - by default: disk, cpu, network
+- cloudwatch logs metric filter
+  - can use filter expression
+  - not retroactive
+  - able to specify up to 3 dimensions for metric filter
+- cloudwatch alarms
+  - triggered by any metric
+  - period:
+    - length of time to evaluate the metric
+    - high resolution custom metrics: 10, 30, or multi of 60 sec
+  - targets:
+    - ec2
+    - ec2 auto scaling
+    - sns
+  - composite alarms
+    - monitor multi alarms states
+    - help reduce alarm noise
+  - ec2 instance recovery:
+    - status check
+    - recovery: same private, public, EIP, metadata, placement group
+  - good to know
+    - alarms can be created on cloudwatch logs metric filter
+  - synthetics canary
+    - aws version of e2e tests
+    - integrated with alarms
+    - blueprints:
+      - heartbeat monitor
+      - api canary
+      - broken link checker
+      - visual monitoring
+      - canary recorder
+      - GUI workflow builder
+- aws eventbridge
+  - schedule: cron jobs
+  - event patterns
+  - trigger lamdba, send sqs, sns,...
+  - event buses
+    - can be accessed by other aws accounts
+    - can archive event
+    - can replay event
+  - schema registry
+    - eventbridge can analyze and infer the schema
+    - allow to create custom registry
+    - can be versioned
+  - resource-based policy
+  - multi-account aggregated
+- aws x-ray
+  - great for distributed system with a plenty of microservices
+  - review request behavior
+  - check service sla
+  - check if throttled
+  - integration:
+    - lambda
+    - EB
+    - ecs
+    - elb
+    - api gateway
+    - ec2 or on-prem
+  - leverages tracing
+    - tracing: e2e way to follow a request
+    - each service will add its own `trace`
+    - tracing is made of segments (subsegments)
+    - annotations: add extra info
+    - security: iam, kms
+    - able to trace:
+      - every request
+      - sample request (%, for example 3%)
+  - to enable x-ray
+    - using aws x-ray sdk
+    - each application must have iam rights to write data to x-ray
+  - x-ray magic:
+    - collect data from different services
+    - service map is computed from all segments and traces
+    - x-ray is graphical, non-technical people can help
+  - troubleshooting:
+    - on ec2:
+      - check the iam permission
+      - check the x-ray daemon
+    - on lambda:
+      - check iam permission
+      - enable lambda x-ray active tracing feature
+      - ensure x-ray client initialized in the code
+  - intrumentation in the code
+    - the measure of product’s performance, diagnose errors, and to write trace information.
+    - to instrument your application code, using sdk
+    - can custom annotations using interceptors, filters, handlers, middlewares,...
+  - concepts:
+    - segments
+    - subsegments
+    - trace
+    - sampling: decrease the amount of request sent to x-ray
+    - annotations: key-value pairs used to `index` traces with `filters`
+    - metadata: not indexed
+  - sampling rules:
+    - control the amount of data sent to x-ray
+    - By default, the X-Ray SDK records the first request `each second`, and `five percent` of any additional requests.
+    - `One request per second is the reservoir`, which ensures that at least one trace is recorded each second as long the service is serving requests.
+    - `Five percent is the rate` at which additional requests beyond the reservoir size are sampled.
+  - custom sampling rules
+  - x-ray write apis
+  - x-ray read apis
+  - x-ray with elastic beanstalk
+    - EB platform include x-ray daemon
+    - can enable by setting an option via eb console or with a configuration file (in the .ebextensions/xray-daemon.config)
+    - remember to check the ec2 iam permission and x-ray sdk
+    - **note**: x-ray daemon is not provided for multi-container docker
+  - ecs + x-ray
+    - x-ray daemon as a separate container
+    - x-ray daemon as a sidecar container with the main container
+    - for fargate cluster
+      - x-ray daemon as a sidecar container
+- aws distro for openTelemetry
+  - open source version of aws x-ray
+  - a standard set of apis to multiple destinations 
+- aws cloudtrail
+  - enabled by default
+  - get a history of events/api calls made within aws account
+  - a trail can be applied to all regions or a single region
+  - Provides governance, compliance and audit for your AWS Account
+  - cloudtrail events
+    - management events (enabled by default), can separate `read events` and `write events`
+    - data events (not enabled by default due to a large amount of operations)
+    - cloudtrail insights events (findings)
+  - event retention: 90 days, or choose to send them to s3 bucket
+  - integration with eventbridge
+
+
+
 #### lambda
 #### dynamodb
 #### api gateway
