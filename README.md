@@ -1537,8 +1537,216 @@ including them in the Cache Key (no duplicated cached content)
 
 
 
-
 #### dynamodb
+
+- nosql db:
+  - not support JOIN
+  - distributed
+  - all the data needed for a query is present in one row
+  - no aggregation operations
+  - scale horizontally
+- overview
+  - fully managed
+  - HA and scalable
+- basics
+  - max size of each item: 400kb
+  - support: scalar types, document types, set types
+- primary key
+  - partition key (hash)
+  - partition key + sort key (hash + range)
+  - must be unique for identifying an item
+- read/write capacity modes
+  - provisioned mode:
+    - read capacity units -- throughput for reads
+    - write capacity units -- throughput for writes
+    - option for auto-scaling
+    - if gets throttled, try `exponential backoff`
+  - on-demand mode:
+    - read/write auto scaling
+    - good for unpredictive workload
+  - One Write Capacity Unit (WCU): represents one write per second for an
+item up to 1 KB in size. if more than 1kb, then more wcus
+  - One Read Capacity Unit (RCU): represents one Strongly Consistent Read per second, or two Eventually Consistent Reads per second, for an item up to 4 KB in size
+  - can switch between every 24 hrs
+- strongly consistent read vs eventually consistent read
+  - eventually consistent read (default)
+  - strongly consistent read: set `consistentread` parameter; will consume double rcu
+- partitions internal
+  - data stored in partitions
+  - Partition Keys go through a hashing algorithm to know to which partition they go to
+  - to compute the number of partitions:
+    - by capacity
+    - by size
+    - then check the max one (by capacity, by size)
+    - wcu and rcu are spread evenly across partitions
+- throttling
+  - reasons:
+    - hot keys
+    - hot partitions
+    - very large items (rcu, wcu depend on the size of item)
+  - solutions:
+    - exponential backoff
+    - distribute partition keys more
+    - if RCU issue, can use dynamodb accelerator DAX
+- writing data
+  - putItem: same primary key will be overwritten
+  - updateItem
+  - conditional write: help with concurrent access, no performance agent
+- reading data
+  - getItem:
+    - eventually consistent read (default)
+    - hash / hash + range
+    - projectionExpression
+  - query:
+    - keyConditionExpression
+    - filterExpression: after query operation, only used with non-key attributes
+    - return up to 1mb data
+    - able to paginate
+  - scan:
+    - consumer a lot rcu
+    - can perform `parallel scan`
+    - can use `projectionExpression` and `filterExpression`, but no change to rcu
+- deleting data
+  - delete item
+  - delete table
+- batch operations
+  - allow to reduce the number of api calls
+  - operations are done in parallel
+  - for partial failure, we need to retry them
+  - batchwriteitem:
+    - up to 25 items
+    - unprocessedkeys
+  - batchgetitem:
+    - up to 100 items
+    - unprocessedkeys
+- dynamodb -- partiql
+  - sql compatible query language for dynamodb
+  - using sdk, cli, aws console, dynamodb api,
+- conditional writes
+  - attribute_exists
+  - attribute_not_exists: make sure item is not overwritten, used for partition key or partition key and sort key
+  - attribute_type
+  - contains (string): check substring
+  - begins_with (string): check prefix
+  - size (string length)
+  - in, and, between,
+- local secondary index
+  - alternative sort key (same partition key)
+  - up to 5 local secondary indexes
+  - must be defined at the table creation time
+  - can choose which attribute to project -- keys_only, all, include 
+- global secondary index
+  - alternative primary key (partition key or partition key + sort key)
+  - query on non-key attributes
+  - can choose which attribute to project -- keys_only, all, include
+  - can be added/updated after table creation
+  - should provision rcu, wcu 
+- indexes and throttling
+  - GSI:
+    - if write is throttled on gsi, then main table will be throttled
+    - even if wcu on main table is fine!!!!
+    - choose gsi partition key carefully
+    - assign wcu carefully
+  - LSI:
+    - use wcu and rcu of the main table
+    - no special throttling considerations
+- partiql
+  - sql-compatible
+  - support batch operations
+- optimistic locking
+  - ddb has a feature called 'conditional writes'
+  - check an attribute, like `version number`
+  - optimistic concurrency control (OCC)
+- dynamodb  accelerator (DAX)
+  - fully managed service
+  - seamless in-memory cache for ddb
+  - no application logic modification
+  - help offload read workload, solve the hot key issue
+  - up to 10 nodes in the cluster
+  - multi-az
+  - secure
+  - vs elasticache
+    - store individual objects cache
+    - elasticache: store aggregation result
+- dynamodb streams
+  - ordered stream of item-level modifications in a table
+  - downstream:
+    - kds
+    - lambda
+    - kcl
+  - retention: 24 hrs
+  - use cases:
+    - cross-region replication
+    - into opensearch
+    - analytics
+    - react to changes in real-time
+  - able to choose what information will be written into stream
+    - keys
+    - new
+    - old
+    - new and old
+  - made of shards, just like kinesis data streams
+  - with lambda
+    - using event source mapping
+    - invoked  synchronously
+- time to live
+  - auto delete item after an expiry timestamp
+  - no extra cost
+  - must be a "number" data type of "unix epoch timestamp" value
+  - deletion within 48 hrs
+  - the deletion operation for each expired item enters the dynamodb stream
+- dynamodb cli
+- dynamodb transactions
+  - ACID
+  - read modes
+  - write modes
+  - consume 2x wcu and rcu
+    - dynamodb perform 2 operations for every item (prepare and commit)
+  - two operations
+    - transactgetitems
+    - transactwriteitems
+- ddb as session state cache
+  - common use
+  - elasticache: not serverless
+  - efs: must attached to ec2 as network drive
+  - ebs and instance store: only for local cache
+  - s3: not for small objects, high latency
+- write sharding
+  - add suffixes to make partition keys more distributed
+- write types
+  - concurrent writes
+  - atomic writes
+  - conditional writes
+  - batch writes
+- large objects pattern
+  - with s3, only store metadata
+- indexing s3 object metadata
+  - could use s3 event notification to call a lambda to store object metadata
+- dynamodb operations
+  - table cleanup
+    - scan + delete: expensive
+    - drop + recreate: fast and cheap
+  - copying a dynamodb table
+    - **aws data pipeline**
+    - backup and restore: takes time
+    - scan + putitem or batchwriteitem : write custom code
+- security and other features
+  - security:
+  - backup and restore:
+    - PITR
+    - no performance impact
+  - global table
+  - dynamodb local: good for dev and test
+  - aws database migration service: only for target, not for source
+- fine-grained access control
+  - for federated or cognito identity pool: get sts token
+  - can assign iam role
+  - leadingKeys -- limit row-level access on primary key
+  - attributes -- limit specific attributes that users can see
+
+
+
+
 #### api gateway
 #### cicd
 #### serverless application model
