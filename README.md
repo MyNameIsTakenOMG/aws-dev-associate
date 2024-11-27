@@ -2030,9 +2030,42 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 
 
-
-
 #### cdk
+
+- overview:
+  - using high level components called constructs
+  - compared to sam: can provision all aws services
+- to use sam to test cdk apps, should run cdk synth
+- cdk constructs
+  - components including everything cdk needs to create a final cloudformation stack
+  - aws construct library:
+    - contains 3 different levels of constructs
+  - construct hub
+    - from aws, 3rd parties and open-source
+- constructs -- layer1
+  - pure cloudformation resources
+  - names start with Cfn
+- constructs -- layer2
+  - similar functionality but with convinent defaults and boilerplate
+  - provide methods to make it simpler to work with
+- construct -- layer3
+  - called patterns, which represents multi resoures
+  - less customization
+  - common tasks
+- cdk -- bootstrapping
+  - The process of provisioning resources for CDK before you can deploy CDK apps into an AWS environment
+  - cdktoolkit stack: s3 bucket, iam roles
+- cdk -- testing
+  - To test CDK apps, use `CDK Assertions Module` combined with popular test frameworks such as Jest (JavaScript) or Pytest (Python)
+  - two types of tests:
+    - fine-grained assertions(common)
+    - snapshot tests
+  - import a template
+    - Template.fromStack(MyStack) : stack built in CDK
+    - Template.fromString(mystring) : stack build outside CDK
+
+  
+
 #### cognito
 #### other serverless
 #### advanced identity
