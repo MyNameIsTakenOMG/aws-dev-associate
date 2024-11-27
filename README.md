@@ -1746,8 +1746,148 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 
 
-
 #### api gateway
+
+- integration:
+  - lambda
+  - http
+  - aws service
+- endpoint types
+  - edge-optimized (default)
+    - cloudfront edge locations
+    - api gateway lives in one region
+  - regional:
+    - can manually combine with cloufront distro
+  - private:
+    - only within your vpc
+- security:
+  - iam roles
+  - cognito
+  - custom authorizer
+- deployment stages
+  - making changes for the api gateway does not mean they are effective
+  - need to make a deployment for them to be in effect
+  - each stage has its own configuration parameters
+  - stage can roll back
+- stage variables
+  - like environment variables for api gateway
+  - used in
+    - lambda arn
+    - http endpoint
+    - parameter mapping templates
+  - use cases:
+    - configure http endpoints your stages talk to (dev,test,prod,...)
+    - pass configuration parameters to lambda through mapping templates
+  - stage variables are passed to the `context` object in lambda
+  - format: ${stageVariables.variableName}
+- api gateway stage variables & lambda aliases
+  - create stage variables to indicate the corresponding lambda aliases
+  - then api gateway will automatically invoke the right lambda function
+- api gateway -- canary deployment
+  - usually prod stage
+  - split a certain percentage of traffic to the canary channel
+  - this is the blue/green deployment with lambda and api gateway
+- integration types
+  - MOCK: returns a response without sending requests to the backend
+  - HTTP/AWS(lambda or other services): setup data mapping using mapping template
+  - AWS_Proxy (lambda proxy): incoming requests will be forwarded to the lambda
+    - no mapping template, headers, query string parameters,... are passed as arguments
+  - http_proxy:
+    - no mapping template
+    - http request passed to the backend
+    - possible to add http headers
+- mapping templates (aws & http integration)
+  - used to modify request/response
+  - add headers
+  - modify body content
+  - rename/modify query string parameters
+  - uses Velecity template language(vtl) or javascript
+  - filter out results (remove unnecessary data)
+  - content-type: application/json or application/xml
+  - can convert rest json to  SOAP xml, build the soap message and call soap service with the message, then transform soap response back to rest json response
+- open api spec
+  - can export current api as openapi spec
+  - can be written in yml or json
+  - using open api to generate sdk for our applications
+- rest api -- request validation
+  - can configure api gateway to perform basic validation without calling the backend
+- caching api responses
+  - defined per stage
+  - possible to override cache settings per method
+  - encryption option
+  - expensive, use it only in prod
+- cache invalidation
+  - able to flush entire cache
+  - invalidationCache policy to restrict access
+- usage plans & api keys
+  - make api profitable
+  - usage plan:
+    - who can access what api stages and methods
+    - how mush they can use
+    - uses api keys to identify api clients and meter access
+    - configure throttling limits and quota limits for individual client
+  - api keys:
+    - distributed to your customers
+    - can use with usage plan to control access
+    - throttling limits are applied to api keys
+    - quotas limits : overall number of requests
+- correct order for api keys
+  - to configure a usage plan:
+    - create apis, configure methods that need api keys and deploy
+    - generate api keys and distribute them to app developers(your customers)
+    - create usage plan with the desired throttle and quota limits
+    - associate api stage with api keys with usage plan
+    - the header: `x-api-key`
+- api gateway -- logging & tracing
+  - cloudwatch logs:
+    - configure log level
+    - can override settings on a per api basis
+  - x-ray
+- api gateway -- cloudwatch metrics
+  - cacheHitCount & cacheMissCount
+  - count
+  - integrationLatency
+  - latency
+  - 4xx and 5xx
+- api gateway throttling
+  - account limit
+  - can set stage limit & method limits
+  - or can define usage plans to throttle per customer
+- api gateway -- errors
+  - 4xx
+  - 5xx
+- api gateway -- cors
+  - the options pre-flight request must contain the following headers:
+    - access-control-allow-methods
+    - access-control-allow-headers
+    - access-control-allow-origins
+- api gateway -- security
+  - iam permission to iam roles iam users
+  - resource policies
+  - cognito user pools
+  - lambda authorizer:
+    - token-based authorizer
+    - a request parameter-based lambda authorizer
+- api gateway -- http api vs rest api
+  - http apis
+  - rest apis
+- api gateway -- websocket api
+  - bi-directional communication
+  - client-server: connecitonID is re-used for different messages
+  - server-client: connection url callback
+    - post
+    - get
+    - delete
+  - routing
+    - no routes -- sent to $default
+    - you select a route selection expression to select the field on the json to route from
+- api gateway -- architecture
+  - create a single interface for all the microservices in your company
+  - apply a simple domain name and ssl
+  - can apply forwarding and transformation rules at the api gateway level
+  
+
+
 #### cicd
 #### serverless application model
 #### cdk
