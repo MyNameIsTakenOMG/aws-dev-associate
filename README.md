@@ -1993,6 +1993,45 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 
 #### serverless application model
+
+- serverless application model
+- using yml files to create cloudformaiton templates
+- use codedeploy
+- recipe
+  - transform header: indicates it is sam template
+  - quickly sync local changes to aws lambda: sam sync -- watch
+  - package & deploy: sam deploy
+- sam accelerate(sam sync)
+  - synchronize the sam templates to aws
+  - synchronize code changes to aws without updating infra (bypass cloudformation)
+- sam -- cli debugging
+  - sam cli
+  - aws toolkit
+  - provide lambda-like execution environment locally
+- sam policy templates
+  - list of templates to apply permissions to your lambda functions
+- sam and codedeploy
+  - natively uses code deploy to update lambda
+  - traffic shifting feature
+  - pre and post traffic hooks
+  - easy and auto rollback using cloudwatch alarms
+  - **note**:
+    - AutoPublishAlias: create new versions and point the lambda alias to the latest version
+    - DeploymentPreference
+    - Alarms
+    - Hooks
+- sam -- local capabilities
+  - start lambda locally
+  - invoke lambda locally
+  - start an api gateway endpoint
+  - generate aws events for lambda functions
+- sam -- multi environments
+  - in samconfig.toml, deploy resources in multi environments
+
+
+
+
+
 #### cdk
 #### cognito
 #### other serverless
