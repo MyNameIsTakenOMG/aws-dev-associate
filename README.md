@@ -2067,6 +2067,58 @@ item up to 1 KB in size. if more than 1kb, then more wcus
   
 
 #### cognito
+
+- overview:
+  - cognito user pool
+    - authentication
+    - serverless data for users for web, mobile apps
+    - mfa
+    - email & phone
+    - password reset
+    - federated identities
+    - block users if their credentials are compromissed
+    - integrations:
+      - api gateway
+      - ALB
+    - triggers
+    - hosted authentication UI can be added to apps
+    - hosted ui custom domain
+      - for custom domains, must create acm certificate in us-east-1
+      - custom domain must be defined in the `app integration` section
+    - adaptive authentication
+      - block sign-ins or require mfa if suspicious
+      - examie each sign-in, generate a risk score
+      - integrated with cloudwatch logs
+    - decoding ID token
+      - the token signature must be verified to ensure jwt can be trusted
+      - libraries can help you verify the token
+      - the payload contains the user info
+    - ALB -- authenticate users
+      - must use an https listener to set authenticate-oidc or cognito
+      - from 3rd identity providers
+      - or cognito user pools
+      - auth through cognito user pools
+      - oidc auth
+      - idp (oidc compliant)
+  - cognito identity pool (federated identity)
+    - get identities for users so they can obtain temoprary aws credentials
+    - users can access aws services directly or through api gateway
+    - your identity pool can include:
+      - public providers
+      - cognito user pool
+      - oidc or saml
+      - allow guess access
+    - iam roles
+      - default for authenticated and guest users
+      - define rules to choose role for each user based on their ID
+      - can partition users access using `policy variables`
+      - roles must have a trust policy of cognito identity pool
+- cognito user pool vs cognito identity pool
+  - cognito user pool: authentication
+  - cognito identity pool: authorization
+
+    
+
 #### other serverless
 #### advanced identity
 #### security and encryption
