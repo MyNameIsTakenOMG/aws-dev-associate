@@ -1889,6 +1889,109 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 
 #### cicd
+
+- introduction
+  - code commit
+    - no longer accept the new customers
+    - version control
+    - collaboration
+    - security
+      - authentication
+      - authorization
+      - encryption
+      - cross-account access
+  - code pipeline
+    - orchesrtate your cicd
+    - source -- build -- test -- deploy -- load testing -- ...
+    - artifacts:
+    - troubleshooting
+      - for pipeline/action/stage execution stage changes
+      - use eventbridge to create events
+      - if pipeline fails, check the console
+      - if pipeline cannot perform an action, check iam permission
+      - cloudtrail can be used to audit 
+  - code build
+    - fully managed ci service
+    - leverage docker under the hood
+    - source: codecommit, github, s3,...
+    - build instructions: buildspec.yml
+      - env:
+        - variables
+        - parameter store
+        - secrets manager
+      - phases
+        - install
+        - pre-build
+        - build
+        - post-build
+      - artifacts: send to s3 bucket used by next stage
+      - cache: files to cache for future build speedup
+    - output logs can be stored in s3 or cloudwatch logs
+    - use eventbridge to detect failed builds
+    - use cloudwatch alarms to notify
+  - code deploy
+    - deploy applications to
+      - ec2, on-prem:
+        - perform in-place deployment or blue/green
+        - for ec2 and on-prem, codedeploy agent
+        - blue/green:
+          - new asg
+        - deployment speed:
+          - all at once
+          - half at a time: in-place deployment
+          - one a time
+          - custom
+      - lambda
+        - can help do traffic splitting for lambda alias
+        - integrated with sam
+        - linear
+        - canary
+        - all at once
+      - ecs
+        - only blue/green
+        - new target group
+        - linear
+        - canary
+        - all at once
+      - deployment to ec2
+        - appspec.yml + deployment strategy
+        - will do in-place deployment
+      - deployment to asg
+        - in place
+        - blue/green: must use ELB
+    - redeploy & rollbacks
+      - when rollback happens, a new deployment will be created
+    - auto rollback
+    - gradual deployment control
+    - use appspec.yml
+  - code star
+    - an integrated solution of github, code commit, code build, code deploy, cloudformation, code pipeline, cloudwatch,...
+  - code artifact
+    - cost-efective artifact management(dependencies) for software development
+    - resource policy
+  - code guru
+    - ml-powered service that automate code review and application performance recommendations
+    - codeguru reviewer:
+      - support java and python
+    - codeguru profiler:
+      - help identify your application performance and provides heap summary
+      - agent configuration:
+        - maxStackDepth
+        - MemoryUsageLimitPercent
+        - MinimumTimeForReportingInMilliseconds
+        - ReportingIntervalInMilliseconds
+        - SamplingIntervalInMilliseconds
+  - cloud9
+    - cloud-based development environment
+- continuous integration (ci)
+  - push code
+  - test/build
+  - get feedback
+- continuous delivery (cd)
+  - ensure deployments happen often and quick
+
+
+
 #### serverless application model
 #### cdk
 #### cognito
