@@ -2196,8 +2196,54 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 
 
-
 #### advanced identity
+
+- aws sts:
+  - can return a temporary credentials for roles, saml, idp, cognito
+  - assumeRole (usually for cross-account)
+  - with mfa
+    - using iam conditions: aws:MultiFactorAuthPresent:true
+- iam best practices -- general
+  - do not use root credentials
+  - grant least privilege for groups, users, roles
+  - do not store iam credentials on any machine, instead, call sts to obtain temporary credentials
+- iam best practices -- iam roles
+  - each services should have their own roles
+- iam best practices -- cross-account access
+- advanced iam -- authorization model evaluation of policies
+  - explicit deny
+  - explicit allow
+  - else deny
+- iam policies & s3 bucket policies
+  - attached to users, groups, roles
+  - bucket policies attached to s3 buckets
+  - iam policy + s3 bucket policy = final policy evaluated
+- dynamic policies with iam
+  - to assign each user to their own path in the s3 bucket:
+    - one policy per user, does not scale!
+    - create a dynamic policy:
+      - `arn::aws::s3:::my-company/home/${aws:username}/*`
+- inline vs managed policies
+  - aws managed policy
+  - custom managed policy
+  - inline: strict one-to-one relationship
+- iam:PassRole
+  - often comes with iam:GetRole
+- trust policy: define who can assume the role
+- microsoft AD
+  - database of objects:
+    - user accounts
+    - computers
+    - printers
+    - file shares
+    - ...
+- aws directory services
+  - aws managed microsoft AD: bi-directional trusts
+  - AD connector: a proxy to the on-prem AD
+  - simple AD: AD compatible managed directory, standalone
+
+
+
 #### security and encryption
 #### other services
 
