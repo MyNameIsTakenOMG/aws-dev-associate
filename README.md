@@ -2120,6 +2120,83 @@ item up to 1 KB in size. if more than 1kb, then more wcus
     
 
 #### other serverless
+
+- step functions
+  - model your workflow as state machines
+  - written in json
+  - visualization
+  - start workflow with sdk, api gateway, eventbridge
+- step function -- task states
+  - do some work in your state machine
+  - can invoke one aws service
+  - run one activity
+- step function -- states
+  - choice state -- branch/condition
+  - fail or success state -- stop execution with failure/success
+  - pass state -- pass input to output or inject some fixed data without performing work
+  - wait state -- provide a delay or until a specific time
+  - map state -- dynamic iterate steps
+  - parallel state -- begin parallel branches of execution
+- step function -- error handling
+  - use retry
+  - use catch
+  - pre-defined error codes:
+    - states.all
+    - states.timeout
+    - states.taskfailed
+    - states.permissions
+  - state may report its own errors
+- step function -- retry (task or parallel state)
+  - evaluate from top to bottom
+  - errorEquals
+  - intervalSeconds
+  - backoffRate
+  - maxAttempts
+    - catch when max attempts are reached
+- step function -- catch (task or parallel state)
+  - evaluate from top to bottom
+  - errorEquals
+  - next
+  - resultPath
+- step function -- resultPath
+  - include error in the input
+- step function -- wait for task token
+  - allow to pause state machine until a task token is returned
+  - task can wait for other aws services, human approval, 3rd party integration, call legacy system....
+  - append `.waitForTaskToken` to the `resource` field to tell step functions to wait for the task token
+  - sendTaskSuccess or sendTaskFailure 
+- step function -- activity tasks
+  - task work polled and performed by activity worker
+  - the worker can run on ec2, lambda, mobile device,...
+  - once finish the work, send a response back using sendTaskSuccess or sendTaskFailure
+  - to keep the task active:
+    - how long a task can wait by setting timeout
+    - periodically send a heartbeat
+    - can wait up to 1 year
+- step function -- standard vs express
+- aws appsync
+  - aws managed graphql service
+  - can combine data from multiple sources
+  - work with websocket or mqtt
+  - all starts with uploading one graphql schema2
+- appsync security
+  - api key
+  - iam
+  - oicd
+  - cognito user pool
+- aws amplify
+  - amplify studio
+  - amplify cli
+  - amplify libraries
+  - amplify hosting
+    - built-in cicd
+    - pull request preview
+    - using cloudfront
+    - e2e testing in test phase of cicd, integrated with cypress
+
+
+
+
 #### advanced identity
 #### security and encryption
 #### other services
