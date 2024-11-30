@@ -2245,6 +2245,90 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 
 #### security and encryption
+
+- kms
+  - able to audit kms key usage using cloudtrail
+  - key types:
+    - symmetric (AES-256)
+    - asymmetric (RSA & ECC key pairs)
+- aws kms key
+  - kms key types:
+    - aws owned keys
+    - aws managed key:
+    - customer managed keys
+  - auto key rotation
+    - aws kms key: every 1 year
+    - custom kms key: must enable auto rotation & on-demand
+    - imported key: manual rotation
+- copying snapshots across regions
+  - remember to attach a key policy to allow cross-account access
+- key policies
+  - similar to s3 bucket policy
+  - default kms key policy
+  - custom kms key policy
+- kms envelope encryption (needs a CMK to encrypt/decrypt data key(which is used to encrypt/decrypt the big file))
+  - limit: 4kb
+  - for files > 4kb, we need to use envelope encryption
+  - the api we gonna use GenerateDataKey api
+  - use data key to encrypt or decrypt big size data or file
+- aws encryption sdk
+  - implemented envelope encryption for us
+  - feature: data key caching
+    - can re-use the data key
+- kms request quotas
+  - when get throttled, use exponential backoff
+  - soft limit, send a ticket
+- s3 bucket key for sse-kms encryption
+- key policy
+  - priincipal options
+    - iam users
+    - federated user sessions
+    - aws services
+    - all principals
+- cloudHSM
+  - aws provisioned encryption hardware
+  - customers manage the keys themselves
+  - good for sse-c
+  - HA
+  - integrated with kms: configure kms custom key store with cloudHSM
+- ssm parameter store
+  - integration with cloudformation
+  - versioning
+  - iam security
+  - optional seamless encryption using kms
+  - hierarchy
+  - standard vs advanced parameter tier
+    - can create parameter policies to assign TTL to parameters
+- aws secret manager
+  - mostly for RDS integration
+  - integration with cloudformation
+  - can force rotation
+  - using kms
+  - multi-region secrets
+    - read replica in sync with primary secret
+    - able to promote a read replica to a standalone
+- cloudformation dynamic references
+  - ssm parameter store 
+  - ssm parameter store secure string
+  - secrets manager
+  - use cases:
+    - ManageMasterUserPassword: create admin secret implicitly for RDS
+    - dynamic reference: create a secret, link the secret and rds db togetther
+- cloudwatch logs -- encryption
+  - using kms
+  - at log group level, with a CMK
+  - must use api, cannot do it through console
+- codeBuild security
+  - to access resources in your vpc, make sure specify vpc configure for codeBuild
+  - use environment variables
+- aws nitro enclaves
+  - process sensitive data in an isolated compute environment
+  - fully isolated virtual machine
+  - use cases: securing private keys, processing credit cards, secure multi-party computation,...
+
+
+
+
 #### other services
 
 - aws ses
