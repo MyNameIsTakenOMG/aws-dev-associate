@@ -2421,6 +2421,15 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 - practice exam:
   - 1st try: 61% (40/65)
+    - api gateway integration: Mock -- api gateway will return a response without sending the request further to the backend.
+    - The simplest way to set up connections to AWS CodeCommit repositories is to configure Git credentials for CodeCommit in the IAM console, and then use those credentials for HTTPS connections.
+    - for codebuild to encryption the artifact, use Aws KMS key
+    - fan-out: sns + sqs (sns message filtering make sure which message goes to which sqs queue)
+    - lambda alias: traffic splitting
+    - rds mysql and rds postgresql as well as aurora are the engines that allow to authenticate using aws iam (**note**: no sql server, oracle)
+    - ApproximateNumberOfMessagesVisible: sqs queue metric
+    - for the api gateway promotion, it can be done either by redeployment to the prod stage or updating a stage variable value
+    - 
 
 ### review lectures and tests
 
