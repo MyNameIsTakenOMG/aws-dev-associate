@@ -2429,7 +2429,83 @@ item up to 1 KB in size. if more than 1kb, then more wcus
     - rds mysql and rds postgresql as well as aurora are the engines that allow to authenticate using aws iam (**note**: no sql server, oracle)
     - ApproximateNumberOfMessagesVisible: sqs queue metric
     - for the api gateway promotion, it can be done either by redeployment to the prod stage or updating a stage variable value
-    - 
+    - A gateway endpoint is a gateway that you specify as a target for a route in your route table for traffic destined to a supported AWS service.
+    - You can choose to have SQS encrypt messages stored in both Standard and FIFO queues using an encryption key provided by AWS Key Management Service (KMS).
+    - deployment in EB:
+      - immutable
+      - traffic splitting
+      - both will launch a new set of instances with new version in a new asg
+      - these deployment strategy would cause ec2 instances burst balances lost
+    - s3 bucket CORSConfiguration
+    - s3 bucket policy
+    - sqs: purgeQueue and deleteQueue
+    - ELB: route more traffic to one instance or one AZ than others, reasons:
+      - sticky sessions enabled
+      - the instances with higher capacity may receive more traffic, for example, CLB may route more traffic to the higher-capacity instances. so it is recommended to use similar types and configurations to reduce the capacity gaps and traffic imbalances
+    - NLB: can handle millions of requests per second, it will open tcp connection to the selected target on the port specified in the listener configuration. and the incoming connections remain unmodified, so the application no need to check x-forwarded-for to see the clients ip addresses     
+    - rds multi-az:
+      - auto failover
+      - os updates: first on standby, and promote it to primary, and then update the old primary, which become the new standby
+    - AWS Step Functions is a serverless function orchestrator that makes it easy to sequence AWS Lambda functions and multiple AWS services into business-critical applications.
+    - sqs: message max size: 256kb
+    - You can configure a Lambda function to connect to private subnets in a virtual private cloud (VPC) in your account. When you connect a function to a VPC, Lambda creates an elastic network interface for each combination of the security group and subnet in your function's VPC configuration.
+    - when encountered a throttled issue, using exponential backoff
+    - ec2 user data:
+      - run only once when the instance is started
+      - run with the root user privileges
+    - cloudwatch custom metrics:
+      - can publish high-resolution custom metric, and then retrieve it with a certain period of time
+      - **note**: the api call `putMerticData` for custom metric is charged
+    - tasks on aws step functions
+      - task: single unit
+    - cloudfront:
+      - one cloudfront distro can serve different types of requests from multiple origins
+      - for origin group: for failover, primary origin and secondary origin
+    - EB: create multiple environment for different application versions
+    - for sqs queue:
+      - tags are case-sensitive
+      - delaySeconds: delay to deliver messages
+      - messageRetentionPeriod: message retention
+    - EBS works with aws kms:
+      - both root and data volumes can be encrypted
+      - at rest or in-transit
+    - http 503: service unavailable
+    - http 504: gateway timeout
+    - http 500: internal server error
+    - http 502: bad gateway
+    - for lambda function:
+      - if it is CPU-, network- or memory-bound, then changing the memory setting can dramatically improve its performance.
+    - for cloudformation:
+      - the condition can be used with parameter secion
+    - s3 bucket: cross-account sharing:
+      - have to make sure both accounts are within a single partition, for example, us-west-1 (standard aws partition) cannot share with account in china in (aws-cn partition)
+    - for cloudfront distribution signed-url:
+      - each signer must have a public-private key pair, the signer use private key to sign the url or cookies, then cloudfront use public key to verify it
+      - when using root user to manage cloudfront keu pairs, one can only have up to 2 active key pairs per account
+      - when using cloudfront key groups, we can have more key pairs associated with a single cloudfront distro
+      - the key pair can only created using root user     
+    - for ec2 instance:
+      - to configure attribute `DeleteOnTermination`, using cli
+    - EFS: file storage service
+    - s3: object storage service
+    - for cloudwatch log:
+      - can send logs data from your log groups inot s3 bucket
+    - rds: auto-scaling
+    - for ecs:
+      - when a container instance is in a state of stopped
+      - trying to terminate it is not going to remove it from the cluster
+      - instead, use ecs console or cli to deregister this container instance, then it will be gone from the ecs cluster
+    - for EB rolling update:
+      - if some batches are succeeded, while others are failed
+      - then some instances run new version, while others run old version
+    - cloudfront:
+      - can configure https between viewers and cloudfront as well as cloudfront and custom origins(match viewer:configure forward requests using viewers protocols or https only)
+    - when configuring ECS:
+      - ecs.config file to configure ecs cluster name
+      - meaning just change the cluster name for cloudformation template is not enough
+      - or container instances will be launched in multi clusters
+    - aws serverless application repository (SAR): a managed repository for serverless applications. It enables teams, organizations, and individual developers to store and share reusable applications, and easily assemble and deploy serverless architectures in powerful new ways. 
+
 
 ### review lectures and tests
 
