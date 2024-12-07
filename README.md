@@ -2527,26 +2527,115 @@ item up to 1 KB in size. if more than 1kb, then more wcus
       - all at once
       - traffic splitting
       - blue/green (dns change)
+    - for the sqs metric: ApproximateNumberOfMessagesVisible
+      - not good for target tracking for auto-scaling, because:
+      - the number of messages in the queue might not change proportionally to the size of the auto scaling group that process messages. Because the instance has multiple factors that could influence the total number of instances needed.
+      - so, the better way is to use a backlog per instance metric with the target value being the acceptable backlog per instance to maintain
+      - to illustrate with an example, let's say that the current ApproximateNumberOfMessages is 1500 and the fleet's running capacity is 10. If the average processing time is 0.1 seconds for each message and the longest acceptable latency is 10 seconds, then the acceptable backlog per instance is 10 / 0.1, which equals 100. This means that 100 is the target value for your target tracking policy. If the backlog per instance is currently at 150 (1500 / 10), your fleet scales out, and it scales out by five instances to maintain proportion to the target value.
+      - Step Scaling scales your cluster on various lengths of steps based on different ranges of thresholds. Target tracking on the other hand intelligently picks the smart lengths needed for the given configuration.
+      - AWS recommends using target tracking scaling policies instead.
+    - for api gateway usage plan:
+      - A usage plan specifies who can access one or more deployed API stages and methods—and also how much and how fast they can access them. The plan uses API keys to identify API clients and meters access to the associated API stages for each key.
+      - You can configure usage plans and API keys to allow customers to access selected APIs at agreed-upon request rates and quotas that meet their business requirements and budget constraints.
+    - for cloudformation output section:
+      - You can use the Export Output Values to export the name of the resource output for a cross-stack reference.
+    - for api gateway performance:
+      - response caching
+      - payload compression
+    - for ec2 burstable instances:
+      - t2, t3
+      - for each new aws account, it is free to use t2.micro within certain usage limits
+    - for aws cdk:
+      - can build the app before `cdk synth`
+      - usually, the toolkit will do it for you, so you cannot forget
+    - for ec2 auto scaling:
+      - region scoped
+      - try to evenly distribute ec2 across AZs
+      - in a vpc, clients can choose which subnets for their ec2 to launch
+    - when using cloudformation:
+      - pseudo parameters in aws:
+        - account id
+        - etc
+    - for codeBuild
+      - can configure TIMEOUT setting
+    - for api gateway
+      - use lambda authorizer to enable 3rd party authorization mechanism: uses bearer token authentication strategies
+    - for ELB:
+      - You must ensure that your load balancer can communicate with registered targets on both the listener port and the health check port.
+      - and also the elb security group is allowed by ec2 instances
+    - for ALB access log:
+      - can be used to analyze traffic patterns and troubleshoot issues
+      - has to enable manaually
+    - trust policy:
+      - the only resource-based policy supported by iam
+    - for ACL:
+      - used to control which principals in another account can access your resources
+    - for SCP
+      - specify the max permissions for an organization or an OU
+    - for permission boundary:
+      - for iam users or roles
+      - set max permissions that an identity-based policy can grant to an iam entity
+    - aws serverless application repository:
+      - pre-built serverless applications
+    - for kinesis data stream throttling:
+      - use exponential backoff
+      - or decrease the frequency or size of your requests
+      - increase the shards
+      - distribute read and write operations as evenly as possible
+    - for aws budget forecast:
+      - AWS requires approximately 5 weeks of usage data to generate budget forecasts. If you set a budget to alert based on a forecasted amount, this budget alert isn't triggered until you have enough historical usage information.
+    - for iam access analyzer
+      - simplifies inspecting unused access to guide you toward least privilege.
+    - for codeDeploy:
+      - ec2
+      - lambda
+      - on-prem
+      - can do blue/green
+    - for SAM:
+      - provides shorthand syntax for building serverless applications
+      - lambda functions
+      - apis
+      - databases
+      - event source mappings
+    - for codeCommit:
+      - iam username and password cannot be used to access it
+    - for kms:
+      - customer-managed cmk
+      - aws managed cmk
+      - aws owned cmk
+    - for efs volumes
+      - can provides a file system with your ecs tasks
+      - support fargate
+    - for secrets manager
+      - manage, rotate, retrieve db credentials
+      - mainly for rds, redshift, and documentDB
+    - for x-ray:
+      - can be used to collect data across aws accounts
+      - provides e2s view of requests as they travel through your application, showing a map of underlying components
+    - for EB:
+      - when to add configuration files
+      - use: .ebextensions/<mysettings>.config
+    - to deploy SSL/TLS server certificates:
+      - use ACM
+      - use iam: can be used as a certificate manager only when you must support https connections in a region that is not supported by ACM
+        - can store secret key
+        - can deploy server certificates
+        - but have to obtain certificates from outside
+        - cannot upload acm certificates
+        - cannot manage certificates via iam console
+    - for iam policy conditions
+      - StringNotEquals
+      - Null 
+    - ELB: cross-zone load balancing
+    - for lambda alias:
+      - traffic splitting
+    - IAM policy variables:
+      - Policy variables act as placeholders. When you make a request to AWS, the placeholder is replaced by a value from the request when the policy is evaluated.
+    - for elasticache
+      - they are not retional db, cannot be used to run sql queries
+    - cloudfront key pairs:
+      - can only be created by root user
     - 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
