@@ -2513,13 +2513,59 @@ item up to 1 KB in size. if more than 1kb, then more wcus
     - aws serverless application repository (SAR): a managed repository for serverless applications. It enables teams, organizations, and individual developers to store and share reusable applications, and easily assemble and deploy serverless architectures in powerful new ways. 
 
 - #### practice tests
-  - 1st test:
+  - test#1:
     - 1st try: 81%
 
 
 ### review lectures and tests
+- review tests
+  - test#1
+    - EB deployment:
+      - immutable: additional asg
+      - additional batch
+      - rolling
+      - all at once
+      - traffic splitting
+      - blue/green (dns change)
+    - 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
 
