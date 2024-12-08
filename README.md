@@ -2635,11 +2635,30 @@ item up to 1 KB in size. if more than 1kb, then more wcus
       - they are not retional db, cannot be used to run sql queries
     - cloudfront key pairs:
       - can only be created by root user
-    - 
-
-
-
-
+    - for x-ray:
+      - sampling: Sampling rules tell the X-Ray SDK how many requests to record for a set of criteria.
+    - for EB:
+      - ElastiCache defined in .ebextensions/ - Any resources created as part of your .ebextensions is part of your Elastic Beanstalk template and will get deleted if the environment is terminated.
+      - To decouple your database instance from your environment, you can run a database instance in Amazon RDS and configure your application to connect to it on launch.
+    - for cloudformation stackset:
+      - create, update, delete stacks across multiple accounts and aws regions
+    - for api gateway mapping templates:
+      - API Gateway lets you use mapping templates to map the payload from a method request to the corresponding integration request and from an integration response to the corresponding method response.
+    - to enable iam users to access billing and cost management console:
+      - configure iam policy
+      - use root user account to activate iam user access to the billing and cost management console
+    - for SAM supported resources type:
+      - api
+      - application
+      - function
+      - httpapi
+      - layerversion
+      - simpletable
+      - statemachine
+    - iam access advisor:
+      - To help identify the unused roles, IAM reports the last-used timestamp that represents when a role was last used to make an AWS request.
+    - iam access analyzer:
+      - AWS IAM Access Analyzer helps you identify the resources in your organization and accounts, such as Amazon S3 buckets or IAM roles, that are shared with an external entity. This lets you identify unintended access to your resources and data, which is a security risk.
 
 
 
