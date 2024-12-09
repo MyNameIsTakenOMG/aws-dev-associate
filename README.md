@@ -2515,7 +2515,8 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 - #### practice tests
   - test#1:
     - 1st try: 81%
-
+  - test#2:
+    - 1st try: 76%
 
 ### review lectures and tests
 - review tests
