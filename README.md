@@ -2660,6 +2660,155 @@ item up to 1 KB in size. if more than 1kb, then more wcus
       - To help identify the unused roles, IAM reports the last-used timestamp that represents when a role was last used to make an AWS request.
     - iam access analyzer:
       - AWS IAM Access Analyzer helps you identify the resources in your organization and accounts, such as Amazon S3 buckets or IAM roles, that are shared with an external entity. This lets you identify unintended access to your resources and data, which is a security risk.
+  - test#2
+    - for ec2 asg:
+      - one scaling activity used to terminate a unhealthy instance
+      - another scaling activity used to launch a new instance
+    - Cognito sync:
+      - Amazon Cognito Sync is an AWS service and client library that enables cross-device syncing of application-related user data. You can use it to synchronize user profile data across mobile devices and the web without requiring your own backend. The client libraries cache data locally so your app can read and write data regardless of device connectivity status. When the device is online, you can synchronize data, and if you set up push sync, notify other devices immediately that an update is available.   
+    - for parameter in cloudformation:
+      - string
+      - number
+      - commaDelimitedList -- list of strings separated by commas
+      - list<number / ec2 vpc id / ec2 sg id / ec2 subnet id>
+      - ec2 key pair / ec2 vpc id / ec2 sg id / ec2 subnet id
+    - for dynamodb:
+      - updateitem action: can edit existing items or add new items if they do not exist
+      - in other words, there is no need for putItem action permission in some use cases       - to re-use ssh key:
+      - create key pair
+      - import the public key into new regions manually
+    - codeDeploy lifecycle hooks:
+      - ValidateService is the last deployment lifecycle event. It is used to verify the deployment was completed successfully.
+    - for reserved instnace billing:
+      - you can run multiple instances concurrently, but only one can receive the benefit of the reserved instance discount
+    - for kms envelope encryption:
+      - While AWS KMS does support sending data up to 4 KB to be encrypted directly, envelope encryption can offer significant performance benefits.
+      - AWS Lambda environment variables can have a maximum size of 4 KB. Additionally, the direct 'Encrypt' API of KMS also has an upper limit of 4 KB for the data payload. To encrypt 1 MB, you need to use the Encryption SDK and pack the encrypted file with the lambda function.
+    - for dynamodb transactionWriteItem operation:
+      - group up to 25 write actions(distinct items in one or more tables)
+      - optionally include a client token to ensure the request is idempotent(for some reason like connection timeout or network issues, same operations are processed for multiple times)
+    - for step functions:
+      - AWS Step Functions is a serverless function orchestrator that makes it easy to sequence AWS Lambda functions and multiple AWS services into business-critical applications.
+      - for each step, it can invoke a lambda or a container task or publish a message to a queue when the whole workflow is completed
+    - for s3 bucket:
+      - all objects are private by default.
+      - However, the object owner can optionally share objects with others by creating a pre-signed URL, using their own security credentials, to grant time-limited permission to download the objects.
+    - for lambda provisioned capacity:
+      - help lower latency by removing the init time
+    - for sns topic:
+      - By default, an Amazon SNS topic subscriber receives every message that's published to the topic.
+      - To receive only a subset of the messages, a subscriber must assign a filter policy to the topic subscription. A filter policy is a JSON object containing properties that define which messages the subscriber receives. 
+    - aws sts is not supported by api gateway
+    - aws sqs:
+      - no limit for storing messages
+      - but in-flight messages do have limits, make sure delete those processed messages
+    - cloudfront key pair:
+      - use root user to manage key pairs, can only have up to 2 active key pairs
+      - the public key is with cloudfront, use private key to sign url or cookie
+    - for s3 access logging:
+      - do not point access logging to the original bucket
+    - for SAM
+      - Presence of Transform section indicates it is a Serverless Application Model (SAM) template
+    - for EB
+      - Include config files in .ebextensions/ at the root of your source code
+      - The option_settings section of a configuration file defines values for configuration options. Configuration options let you configure your Elastic Beanstalk environment, the AWS resources in it, and the software that runs your application. Configuration files are only one of several ways to set configuration options.
+    - for cloudfront signed url and signed cookie
+      - Signed URLs take precedence over signed cookies.
+      - signed cookies: multiple files, no url changes
+    - for ebs volume:
+      - gp2 performance is tied to the volume size
+      - 5.3TiB
+    - reserved capacity:
+      - zonal reserved instances provides reserved capacity
+      - regional reserved instances does not provide reserved capacity
+    - cognito identity pool:
+      - Amazon Cognito identity pools (federated identities) enable you to create unique identities for your users and federate them with identity providers.
+    - codeDeploy:
+      - ec2, on-prem, lambda, ecs
+    - rds and dynamodb:
+      - both support transaction operations
+    - for dynamodb backup and download:
+      - on-demand
+      - PITR
+      - **note**: the underlying s3 bucket is not accessible
+      - use aws glue to copy your table to s3 and download locally and can use in another service, like athena
+      - use aws data pipeline(using aws emr under the hood) to create backup and export to s3 and then download: the easiest method using the lowest amount of aws resources(emr and hive details are abstracted)
+      - use aws emr + Hive to export your data to s3 bucet and download (if you are aws EMR user)
+    - codeDeploy:
+      - appspec.yml in the root directory
+    - for the sink types supported by kinesis firehose
+      - **note**: elasticache is not supported destination for kinesis data firehose
+      - elasticSearch (opensearch)
+      - s3
+      - redshift with s3
+    - for secrets manager:
+      - You can also use caching with Secrets Manager to significantly improve the availability and latency of applications.
+    - for io1 ebs volume:
+      - the ratio of iops and volume size is 50:1
+    - for vpc flow logs:
+      - VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC.
+      - Flow log data can be published to Amazon CloudWatch Logs or Amazon S3.
+    - api gateway:
+      - integration with cognito user pool
+      - default authorizer
+    - for step functions:
+      - if a task type has a resultPath, meaning it is a required parameter, then this is not a task, but a pass
+    - for dynamodb:
+      - support eventually consistent reads and strongly consistent reads
+      - when set ConsistentRead = true, then using strongly consistent read, otherwise eventually consistent read
+    - for aws cli:
+      - the option: --dry-run could use to check whether you have the required permissions for the action, without actually making the requests
+    - ebs volumes are az scoped
+    - for EB deployment:
+      - immutable: rollback is automated
+      - for rolling or rolling with additional batch: rollback is manual
+    - for lambda function container image:
+      - must implement the lambda runtime api
+      - lambda provides multi-architecture base image. but, the image you build for your function must target only one of the architecture. lambda does not support multi-architecture container images
+    - for sqs:
+      - delay queue let you postpone the delivery of new messages to a queue for several seconds
+    - for ecs and alb:
+      - When you deploy your services using Amazon Elastic Container Service (Amazon ECS), you can use dynamic port mapping to support multiple tasks from a single service on the same container instance. Amazon ECS manages updates to your services by automatically registering and deregistering containers with your target group using the instance ID and port for each container.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
