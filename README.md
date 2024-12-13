@@ -2521,8 +2521,13 @@ item up to 1 KB in size. if more than 1kb, then more wcus
     - 1st try: 67%
 
 ### review lectures and tests
-- review tests
-  - test#1
+#### table of contents
+- [test#1](#test#1)
+- [test#2](#test#2)
+- [test#3](#test#3)
+
+#### review tests
+  - #### test#1
     - EB deployment:
       - immutable: additional asg
       - additional batch
@@ -2662,7 +2667,7 @@ item up to 1 KB in size. if more than 1kb, then more wcus
       - To help identify the unused roles, IAM reports the last-used timestamp that represents when a role was last used to make an AWS request.
     - iam access analyzer:
       - AWS IAM Access Analyzer helps you identify the resources in your organization and accounts, such as Amazon S3 buckets or IAM roles, that are shared with an external entity. This lets you identify unintended access to your resources and data, which is a security risk.
-  - test#2
+  - #### test#2
     - for ec2 asg:
       - one scaling activity used to terminate a unhealthy instance
       - another scaling activity used to launch a new instance
@@ -2771,22 +2776,100 @@ item up to 1 KB in size. if more than 1kb, then more wcus
       - delay queue let you postpone the delivery of new messages to a queue for several seconds
     - for ecs and alb:
       - When you deploy your services using Amazon Elastic Container Service (Amazon ECS), you can use dynamic port mapping to support multiple tasks from a single service on the same container instance. Amazon ECS manages updates to your services by automatically registering and deregistering containers with your target group using the instance ID and port for each container.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  - #### test#3:
+    - for elasticache:
+      - improve latency and throughput for read-heavy workloads
+      - or compute-intensive workloads(like recommendation engine) by allowing you to store the objects that are often read in the cache
+    - for elb route more traffic to one instance or az:
+      - maybe sticky session
+      - maybe the instance capacity
+    - codeDeploy:
+      - in-place
+      - blue/green deployment:
+        - lambda
+        - ecs
+        - ec2/on-prem
+    - EB:
+      - rolling
+      - immutable
+      - in-place
+      - blue/green (needs route53)
+    - elasticache:
+      - redis in cluster mode: highly reliable, support transactions
+      - memcached: designed for simplicity
+    - for ec2 detailed monitoring:
+      - use `monitor-instances` option
+    - s3 bucket access:
+      - iam policy
+      - bucket policy
+      - ACLs: can grant certain permissions(read,write,...) to certain users for a bucket or object
+      - query string authentication: create a signed url
+    - for api gateway stages:
+      - The promotion can be done by redeploying the API to the prod stage or updating a stage variable value from the stage name of test to that of prod in integration endpoint so that the requests will be forwarded to that url.
+    - lambda execution context:
+      - used for init sdk client, db connection,etc
+      - improve performance
+    - iam:
+      - iam variables to dynamically specify paths for users (s3 bucket files)
+    - for s3 access deny:
+      - if iam role has proper permissions
+      - if s3 bucket policy has no explicit deny
+      - if using sse-kms
+      - then could be **kms:GenerateDataKey** action
+    - GenerateDataKey api call:
+      - Make a GenerateDataKey API call that returns a plaintext key and an encrypted copy of a data key. Use a plaintext key to encrypt the data
+      - to encrypt:
+        - GenerateDataKey to get a data key
+        - Use the plaintext data key (in the Plaintext field of the response) to encrypt your data outside of AWS KMS. Then erase the plaintext data key from memory.
+        - Store the encrypted data key (in the CiphertextBlob field of the response) with the encrypted data.
+      - to decrypt:
+        - Use the Decrypt operation to decrypt the encrypted data key. The operation returns a plaintext copy of the data key.
+        - Use the plaintext data key to decrypt data outside of AWS KMS, then erase the plaintext data key from memory.
+    - for s3 bucket cross-account sharing within different partition
+      - for aws standard partition
+      - and aws china partition
+      - we cannot use iam roles and resource-based policies to do that
+    - for aws access control list:
+      - An Access Control List (ACL) is a set of rules that define which AWS accounts or predefined groups can access your AWS resources, such as Amazon S3 buckets and objects.
+      - permissions: read, write, read_acp, write_acp, full_control
+      - only be able to grant permissions to other aws accounts
+      - no explicit deny
+      - no conditional permissions
+      - best practice: use iam policy
+    - for ecs config:
+      - in ecs.config file, to configure cluster name
+      - otherwise, new instances will be launched in the original cluster as well as the new cluster
+    - for rds disaster recovery:
+      - cross-region read replicas
+      - enable auto backup in multi-az in a single region
+    - x-ray:
+      - sampling rules
+    - for sqs message size:
+      - max: 256kb
+      - or use sqs extended client (up to 2gb)
+    - step functions:
+      - express workflows: for high event rates and short duration
+      - standard workflows: for long-running, durable, auditable workflows where repeat is expensive or harmful. support human approval
+    - sqs:
+      - store: unlimited
+      - in-flight: 120,000 approximately
+    - x-ray:
+      - To run the X-Ray daemon locally, on-premises, or on other AWS services, download it, run it, and then give it permission to upload segment documents to X-Ray.
+    - for api gateway websocket api:
+      - In a WebSocket API, the client and the server can both send messages to each other at any time. 
+    - for kms-cmk:
+      - you can create, rotate, and disable customer-managed CMKs.
+    - kinesis data stream: real-time
+    - kinesis data firehose: near real-time
+    - aws glue: integration service. used to discover, prepare, and combine data for analytics, ml, app development,etc.
+    - kinesis data stream:
+      - retention: up to 1 year
+      - can run audit applition and billing application
+    - kinesis data analytics:
+      - used to build sql queries and complicated java apps
+      - real-time
+      - no retention
+    - 
 
 
 
