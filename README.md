@@ -2869,9 +2869,59 @@ item up to 1 KB in size. if more than 1kb, then more wcus
       - used to build sql queries and complicated java apps
       - real-time
       - no retention
+    - for lambda function types of errors:
+      - Invocation errors occur when the invocation request is rejected before your function receives it.
+      - Function errors occur when your function's code or runtime returns an error.
+    - ssm parameter store vs environment variables
+      - parameter store: secure, hierarchical storage, loaded at the runtime
+    - codeBuild:
+      - fully managed service
+      - scales automatically to meet peak build requests.
+    - for lambda environment variables:
+      - total size of all environment variables should not exceed 4kb
+      - no limit on the number of variables
+    - for s3 replication:
+      - same-region at bucket level, a shared prefix level, or an object level using object tags
+      - cross-region at bucket level, a shared prefix level, or an object level using object tags
+      - be aware that the s3 lifecycle actions are not replicated, if need, then have to configure at both buckets
+    - for EB:
+      - web server tier
+      - worker tier
+    - for s3 bucket policy:
+      - can use a condition to identify if a user has not signed in with MFA for some time using `"NumericGreaterThanIfExists": {"aws:MultiFactorAuthAge": "1800"}`
+    - for codePipeline:
+      - we can orchestrate the whole process, besides, we can add a manual approval if need
+    - for ecs cluster:
+      - when an instance is in a state of stopped, instead of terminating it, you should deregister your container instance using ecs console or aws cli
+    - for rds or dynamodb:
+      - the auto-backup or PITR only has 35 days retention
+      - need to create snapshots or create backups using aws backup
+    - for db iam authentication:
+      - rds mysql
+      - rds postgresql
+    - for ec2 detailed monitoring:
+      - the metric data resolution is 5min
+      - for high resolutions, better use custom metric
+    - for ssm parameter store:
+      - you cannot use resource-based policy
+      - for advanced tier, you can configure parameter policy for ttl
+    - for secrets manager
+      - can use resource-based policy
+      - can use iam role
+    - for cloudformation parameter section:
+      - can define : AllowedValues refers to an array containing the list of values allowed for the parameter
+    - for codeDeploy agent on ec2:
+      - You can use the `:max_revisions:` option in the agent configuration file to specify the number of application revisions to the archive by entering any positive integer
+    - for ebs encryption:
+      - data at rest
+      - all snapshots
+      - all volumes created from the snapshots
+      - data moved between the volumes and the instances
+    - for s3 bucket owner and object owner:
+      - Use S3 Object Ownership to default bucket owner to be the owner of all objects in the bucket
+      - With S3 Object Ownership, any new objects that are written by other accounts with the bucket-owner-full-control canned access control list (ACL) automatically become owned by the bucket owner, who then has full control of the objects.
+    - You can configure a Lambda function to connect to private subnets in a virtual private cloud (VPC) in your account.
     - 
-
-
 
 
 
