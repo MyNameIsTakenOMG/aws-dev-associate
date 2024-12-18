@@ -2523,6 +2523,8 @@ item up to 1 KB in size. if more than 1kb, then more wcus
     - 1st try: 72%
   - test#5:
     - 1st try: 73%
+  - test#6:
+    - 1st try: 76%
 
 ### review lectures and tests
 #### table of contents
@@ -2530,6 +2532,8 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 - [test#2](#test#2)
 - [test#3](#test#3)
 - [test#4](#test#4)
+- [test#5](#test#5)
+- [test#6](#test#6)
 
 #### review tests
   - #### test#1
@@ -3059,7 +3063,10 @@ item up to 1 KB in size. if more than 1kb, then more wcus
         - lambda
       - when the target type is IP:
         - you can specify IP addresses from specific CIDR blocks only. You can't specify publicly routable IP addresses.
-
+  
+  
+  - #### test#5
+  - #### test#6
 
 
 
