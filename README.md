@@ -2420,12 +2420,12 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 ### practice tests
 
 #### table of contents
-- [practice exam](#practice-exam)
-- [practice tests](#practice-tests)
+- [prac exam](#prac-exam)
+- [prac tests](#prac-tests)
 
 
 
-#### practice exam:
+#### prac exam:
   - 1st try: 61% (40/65)
     - api gateway integration: Mock -- api gateway will return a response without sending the request further to the backend.
     - The simplest way to set up connections to AWS CodeCommit repositories is to configure Git credentials for CodeCommit in the IAM console, and then use those credentials for HTTPS connections.
@@ -2512,7 +2512,7 @@ item up to 1 KB in size. if more than 1kb, then more wcus
       - or container instances will be launched in multi clusters
     - aws serverless application repository (SAR): a managed repository for serverless applications. It enables teams, organizations, and individual developers to store and share reusable applications, and easily assemble and deploy serverless architectures in powerful new ways. 
 
-#### practice tests
+#### prac tests
   - test#1:
     - 1st try: 81%
   - test#2:
