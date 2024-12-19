@@ -2528,15 +2528,15 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 ### review lectures and tests
 #### table of contents
-- [test#1](#test#1)
-- [test#2](#test#2)
-- [test#3](#test#3)
-- [test#4](#test#4)
-- [test#5](#test#5)
-- [test#6](#test#6)
+- [test1](#test1)
+- [test2](#test2)
+- [test3](#test3)
+- [test4](#test4)
+- [test5](#test5)
+- [test6](#test6)
 
 
-#### test#1
+#### test1
 - EB deployment:
   - immutable: additional asg
   - additional batch
@@ -2678,7 +2678,7 @@ item up to 1 KB in size. if more than 1kb, then more wcus
     - AWS IAM Access Analyzer helps you identify the resources in your organization and accounts, such as Amazon S3 buckets or IAM roles, that are shared with an external entity. This lets you identify unintended access to your resources and data, which is a security risk.
 
 
-#### test#2
+#### test2
 - for ec2 asg:
   - one scaling activity used to terminate a unhealthy instance
   - another scaling activity used to launch a new instance
@@ -2790,7 +2790,7 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 
 
-#### test#3:
+#### test3:
 - for elasticache:
   - improve latency and throughput for read-heavy workloads
   - or compute-intensive workloads(like recommendation engine) by allowing you to store the objects that are often read in the cache
@@ -2935,139 +2935,141 @@ item up to 1 KB in size. if more than 1kb, then more wcus
   - Use S3 Object Ownership to default bucket owner to be the owner of all objects in the bucket
   - With S3 Object Ownership, any new objects that are written by other accounts with the bucket-owner-full-control canned access control list (ACL) automatically become owned by the bucket owner, who then has full control of the objects.
 - You can configure a Lambda function to connect to private subnets in a virtual private cloud (VPC) in your account.
+
+
   
-  - #### test#4
-    - for kinesis data stream throttling error:
-      - check if there is a hot shard or partition key is not distributed enough  
-    - for Cognito sync:
-      - use it to synchronize user profile data across mobile devices and the web without requiring your own backend.
-      - so that your app can read and write data regardless of device connectivity status
-    - for s3 bucket:
-      - can configure CORSRule in corsConfiguration, which is an xml document
-    - for sqs:
-      - can enable kms encryption for sqs standard queue or fifo queue 
-    - for nlb:
-      - work on 4th layer of OSI model, handle millions of requests, using tcp connection to send requests without modification.
-      - so to check the client info like IP, no need for x-forwarded-for header
-    - for aws security best practice:
-      - avoid using user credentials
-      - instead, using iam role
-    - for client request ephemeral port range:
-      - linux: 32768-61000
-      - win server 2003: 1025-5000
-      - win server 2008: 49152-65535
-      - elb: 1024-65535
-      - nat gateway: 1024-65535
-      - lambda: 1024-65535
-    - if a user is not authorized to perform an action, and response is encoded
-      - then use AWS STS decode-authorization-message to decode the message
-      - note: this user must be granted permissions to use this api call: AWS STS decode-authorization-message
-    - for aws code commit and kms:
-      - data in aws code commit is encrypted in transit and at rest
-      - no need kms
-    - for cross-account permissions:
-      - account A:
-        - a role
-        - a trust policy
-      - account B:
-        - a role to assume the role in account A
-    - for code deploy lifecycle:
-      - applicationStop
-      - downloadBundle
-      - beforeInstall
-      - applicationStart
-      - validateService
-      - block traffic
-      - allow traffic
-    - for sqs message max size: 256KB
-    - for cloudfront security:
-      - between clients and cloudfront:
-        - https only
-        - redirect http to https
-      - cloudfront and the backend: origin policy
-        - https only
-        - match viewer
-    - for migrating github to aws code commit
-      - git credentials: the recommended user type for working with CodeCommit.
-      - note: github secure token is specific to github
-    - for lambda execution context: reuse across function calls
-    - for cloudfront:
-      - configure a single distro to serve different types of requests from multiple origins
-      - note: an origin group consists of two origins: a primary origin and a secondary origin. this is for auto failover
-    - sns-sqs:
-      - fanout solution
-      - sns has filters to decide which messages go to which queue
-    - for dynamodb stream:
-      - catch events at item level
-    - for sse-c:
-      - https is a must
-      - a key must be sent over https and every single request
-    - for api gateway cache:
-      - use the Header Cache-Control: max-age=0 to invalidate the existing cache entry
-    - for cloudwatch logs:
-      - can export log data from cloudwatch log groups to s3 buckets
-    - for s3 bucket:
-      - 'x-amz-server-side-encryption': 'aws:kms'
-      - 'x-amz-server-side-encryption': 'AES256'
-    - for code pipeline source:
-      - s3 source bucket
-      - code commit
-      - github, ...
-    - to send data from ec2 to kinesis data stream:
-      - using kinesis agent(a stand-alone Java software application that offers an easy way to collect and send data to Kinesis Data Streams. )
-      - kinesis producer library: is not for continuously monitoring and sending data. it is a middle man between your app code and kinesis data stream api actions
-    - for elasticache for redis:
-      - HA and scalable
-      - with cluster mode enabled
-    - for cloudformation:
-      - cloudformation package: pack and upload local artifacts
-      - cloudformation deploy: create and execute a changeset
-    - elasticache for redis:
-      - support: lists, sets, sorted sets, hashes,...
-      - encryption at rest and in transit
-    - for dynamodb scan operation:
-      - parallel scan
-      - need to run multiple worker threads or processes in parallel
-      - each worker will scan a part of a table
-    - for code build:
-      - cache dependencies in s3 bucket
-    - for dynamodb local secondary index:
-      - created when the table is launched
-      - cannot be changed afterward
-    - for sse-kms:
-      - auto rotate
-    - for lambda:
-      - max ram: 10gb
-    - cloudformation:
-      - aws pseudo parameters
-    - for code deploy:
-      - if there is a failure
-      - a new deployment of the last known working version of the application is deployed with a new deployment ID
-    - iam policy and resource-based policy:
-      - resource-based policy can be used for cross-account permissions
-    - s3 bucket access logs and cloudtrail:
-      - for object-level api access logs
-      - the bucket owner needs to be the object owner to get the access logs
-      - through the object ACL
-      - cloudtrail:
-        - always deliver object-level api logs to the requester
-        - as well as bucket owner only if the bucket owner has permissions for the same api actions on that object
-    - to encrypt cloudwatch logs:
-      - Use the AWS CLI associate-kms-key command and specify the KMS key ARN
-      - note: cloudwatch logs are always encrypted, it is just you can choose which key to use
-    - for elasticache for redis:
-      - All the nodes in a Redis cluster must reside in the same region
-      - While using Redis with cluster mode enabled
-        - you cannot manually promote any of the replica nodes to primary
-        - multi-az is required
-        - You can only change the structure of a cluster, the node type, and the number of nodes by restoring from a backup.
-    - for alb:
-      - targets types:
-        - instance
-        - ip
-        - lambda
-      - when the target type is IP:
-        - you can specify IP addresses from specific CIDR blocks only. You can't specify publicly routable IP addresses.
+#### test#4
+- for kinesis data stream throttling error:
+  - check if there is a hot shard or partition key is not distributed enough  
+- for Cognito sync:
+  - use it to synchronize user profile data across mobile devices and the web without requiring your own backend.
+  - so that your app can read and write data regardless of device connectivity status
+- for s3 bucket:
+  - can configure CORSRule in corsConfiguration, which is an xml document
+- for sqs:
+  - can enable kms encryption for sqs standard queue or fifo queue 
+- for nlb:
+  - work on 4th layer of OSI model, handle millions of requests, using tcp connection to send requests without modification.
+  - so to check the client info like IP, no need for x-forwarded-for header
+- for aws security best practice:
+  - avoid using user credentials
+  - instead, using iam role
+- for client request ephemeral port range:
+  - linux: 32768-61000
+  - win server 2003: 1025-5000
+  - win server 2008: 49152-65535
+  - elb: 1024-65535
+  - nat gateway: 1024-65535
+  - lambda: 1024-65535
+- if a user is not authorized to perform an action, and response is encoded
+  - then use AWS STS decode-authorization-message to decode the message
+  - note: this user must be granted permissions to use this api call: AWS STS decode-authorization-message
+- for aws code commit and kms:
+  - data in aws code commit is encrypted in transit and at rest
+  - no need kms
+- for cross-account permissions:
+  - account A:
+    - a role
+    - a trust policy
+  - account B:
+    - a role to assume the role in account A
+- for code deploy lifecycle:
+  - applicationStop
+  - downloadBundle
+  - beforeInstall
+  - applicationStart
+  - validateService
+  - block traffic
+  - allow traffic
+- for sqs message max size: 256KB
+- for cloudfront security:
+  - between clients and cloudfront:
+    - https only
+    - redirect http to https
+  - cloudfront and the backend: origin policy
+    - https only
+    - match viewer
+- for migrating github to aws code commit
+  - git credentials: the recommended user type for working with CodeCommit.
+  - note: github secure token is specific to github
+- for lambda execution context: reuse across function calls
+- for cloudfront:
+  - configure a single distro to serve different types of requests from multiple origins
+  - note: an origin group consists of two origins: a primary origin and a secondary origin. this is for auto failover
+- sns-sqs:
+  - fanout solution
+  - sns has filters to decide which messages go to which queue
+- for dynamodb stream:
+  - catch events at item level
+- for sse-c:
+  - https is a must
+  - a key must be sent over https and every single request
+- for api gateway cache:
+  - use the Header Cache-Control: max-age=0 to invalidate the existing cache entry
+- for cloudwatch logs:
+  - can export log data from cloudwatch log groups to s3 buckets
+- for s3 bucket:
+  - 'x-amz-server-side-encryption': 'aws:kms'
+  - 'x-amz-server-side-encryption': 'AES256'
+- for code pipeline source:
+  - s3 source bucket
+  - code commit
+  - github, ...
+- to send data from ec2 to kinesis data stream:
+  - using kinesis agent(a stand-alone Java software application that offers an easy way to collect and send data to Kinesis Data Streams. )
+  - kinesis producer library: is not for continuously monitoring and sending data. it is a middle man between your app code and kinesis data stream api actions
+- for elasticache for redis:
+  - HA and scalable
+  - with cluster mode enabled
+- for cloudformation:
+  - cloudformation package: pack and upload local artifacts
+  - cloudformation deploy: create and execute a changeset
+- elasticache for redis:
+  - support: lists, sets, sorted sets, hashes,...
+  - encryption at rest and in transit
+- for dynamodb scan operation:
+  - parallel scan
+  - need to run multiple worker threads or processes in parallel
+  - each worker will scan a part of a table
+- for code build:
+  - cache dependencies in s3 bucket
+- for dynamodb local secondary index:
+  - created when the table is launched
+  - cannot be changed afterward
+- for sse-kms:
+  - auto rotate
+- for lambda:
+  - max ram: 10gb
+- cloudformation:
+  - aws pseudo parameters
+- for code deploy:
+  - if there is a failure
+  - a new deployment of the last known working version of the application is deployed with a new deployment ID
+- iam policy and resource-based policy:
+  - resource-based policy can be used for cross-account permissions
+- s3 bucket access logs and cloudtrail:
+  - for object-level api access logs
+  - the bucket owner needs to be the object owner to get the access logs
+  - through the object ACL
+  - cloudtrail:
+    - always deliver object-level api logs to the requester
+    - as well as bucket owner only if the bucket owner has permissions for the same api actions on that object
+- to encrypt cloudwatch logs:
+  - Use the AWS CLI associate-kms-key command and specify the KMS key ARN
+  - note: cloudwatch logs are always encrypted, it is just you can choose which key to use
+- for elasticache for redis:
+  - All the nodes in a Redis cluster must reside in the same region
+  - While using Redis with cluster mode enabled
+    - you cannot manually promote any of the replica nodes to primary
+    - multi-az is required
+    - You can only change the structure of a cluster, the node type, and the number of nodes by restoring from a backup.
+- for alb:
+  - targets types:
+    - instance
+    - ip
+    - lambda
+  - when the target type is IP:
+    - you can specify IP addresses from specific CIDR blocks only. You can't specify publicly routable IP addresses.
   
   
 #### test#5
