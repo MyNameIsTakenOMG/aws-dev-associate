@@ -2535,401 +2535,406 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 - [test#5](#test#5)
 - [test#6](#test#6)
 
-#### review tests
-  - #### test#1
-    - EB deployment:
-      - immutable: additional asg
-      - additional batch
-      - rolling
-      - all at once
-      - traffic splitting
-      - blue/green (dns change)
-    - for the sqs metric: ApproximateNumberOfMessagesVisible
-      - not good for target tracking for auto-scaling, because:
-      - the number of messages in the queue might not change proportionally to the size of the auto scaling group that process messages. Because the instance has multiple factors that could influence the total number of instances needed.
-      - so, the better way is to use a backlog per instance metric with the target value being the acceptable backlog per instance to maintain
-      - to illustrate with an example, let's say that the current ApproximateNumberOfMessages is 1500 and the fleet's running capacity is 10. If the average processing time is 0.1 seconds for each message and the longest acceptable latency is 10 seconds, then the acceptable backlog per instance is 10 / 0.1, which equals 100. This means that 100 is the target value for your target tracking policy. If the backlog per instance is currently at 150 (1500 / 10), your fleet scales out, and it scales out by five instances to maintain proportion to the target value.
-      - Step Scaling scales your cluster on various lengths of steps based on different ranges of thresholds. Target tracking on the other hand intelligently picks the smart lengths needed for the given configuration.
-      - AWS recommends using target tracking scaling policies instead.
-    - for api gateway usage plan:
-      - A usage plan specifies who can access one or more deployed API stages and methods—and also how much and how fast they can access them. The plan uses API keys to identify API clients and meters access to the associated API stages for each key.
-      - You can configure usage plans and API keys to allow customers to access selected APIs at agreed-upon request rates and quotas that meet their business requirements and budget constraints.
-    - for cloudformation output section:
-      - You can use the Export Output Values to export the name of the resource output for a cross-stack reference.
-    - for api gateway performance:
-      - response caching
-      - payload compression
-    - for ec2 burstable instances:
-      - t2, t3
-      - for each new aws account, it is free to use t2.micro within certain usage limits
-    - for aws cdk:
-      - can build the app before `cdk synth`
-      - usually, the toolkit will do it for you, so you cannot forget
-    - for ec2 auto scaling:
-      - region scoped
-      - try to evenly distribute ec2 across AZs
-      - in a vpc, clients can choose which subnets for their ec2 to launch
-    - when using cloudformation:
-      - pseudo parameters in aws:
-        - account id
-        - etc
-    - for codeBuild
-      - can configure TIMEOUT setting
-    - for api gateway
-      - use lambda authorizer to enable 3rd party authorization mechanism: uses bearer token authentication strategies
-    - for ELB:
-      - You must ensure that your load balancer can communicate with registered targets on both the listener port and the health check port.
-      - and also the elb security group is allowed by ec2 instances
-    - for ALB access log:
-      - can be used to analyze traffic patterns and troubleshoot issues
-      - has to enable manaually
-    - trust policy:
-      - the only resource-based policy supported by iam
-    - for ACL:
-      - used to control which principals in another account can access your resources
-    - for SCP
-      - specify the max permissions for an organization or an OU
-    - for permission boundary:
-      - for iam users or roles
-      - set max permissions that an identity-based policy can grant to an iam entity
-    - aws serverless application repository:
-      - pre-built serverless applications
-    - for kinesis data stream throttling:
-      - use exponential backoff
-      - or decrease the frequency or size of your requests
-      - increase the shards
-      - distribute read and write operations as evenly as possible
-    - for aws budget forecast:
-      - AWS requires approximately 5 weeks of usage data to generate budget forecasts. If you set a budget to alert based on a forecasted amount, this budget alert isn't triggered until you have enough historical usage information.
-    - for iam access analyzer
-      - simplifies inspecting unused access to guide you toward least privilege.
-    - for codeDeploy:
-      - ec2
-      - lambda
-      - on-prem
-      - can do blue/green
-    - for SAM:
-      - provides shorthand syntax for building serverless applications
-      - lambda functions
-      - apis
-      - databases
-      - event source mappings
-    - for codeCommit:
-      - iam username and password cannot be used to access it
-    - for kms:
-      - customer-managed cmk
-      - aws managed cmk
-      - aws owned cmk
-    - for efs volumes
-      - can provides a file system with your ecs tasks
-      - support fargate
-    - for secrets manager
-      - manage, rotate, retrieve db credentials
-      - mainly for rds, redshift, and documentDB
-    - for x-ray:
-      - can be used to collect data across aws accounts
-      - provides e2s view of requests as they travel through your application, showing a map of underlying components
-    - for EB:
-      - when to add configuration files
-      - use: .ebextensions/<mysettings>.config
-    - to deploy SSL/TLS server certificates:
-      - use ACM
-      - use iam: can be used as a certificate manager only when you must support https connections in a region that is not supported by ACM
-        - can store secret key
-        - can deploy server certificates
-        - but have to obtain certificates from outside
-        - cannot upload acm certificates
-        - cannot manage certificates via iam console
-    - for iam policy conditions
-      - StringNotEquals
-      - Null 
-    - ELB: cross-zone load balancing
-    - for lambda alias:
-      - traffic splitting
-    - IAM policy variables:
-      - Policy variables act as placeholders. When you make a request to AWS, the placeholder is replaced by a value from the request when the policy is evaluated.
-    - for elasticache
-      - they are not retional db, cannot be used to run sql queries
-    - cloudfront key pairs:
-      - can only be created by root user
-    - for x-ray:
-      - sampling: Sampling rules tell the X-Ray SDK how many requests to record for a set of criteria.
-    - for EB:
-      - ElastiCache defined in .ebextensions/ - Any resources created as part of your .ebextensions is part of your Elastic Beanstalk template and will get deleted if the environment is terminated.
-      - To decouple your database instance from your environment, you can run a database instance in Amazon RDS and configure your application to connect to it on launch.
-    - for cloudformation stackset:
-      - create, update, delete stacks across multiple accounts and aws regions
-    - for api gateway mapping templates:
-      - API Gateway lets you use mapping templates to map the payload from a method request to the corresponding integration request and from an integration response to the corresponding method response.
-    - to enable iam users to access billing and cost management console:
-      - configure iam policy
-      - use root user account to activate iam user access to the billing and cost management console
-    - for SAM supported resources type:
-      - api
-      - application
-      - function
-      - httpapi
-      - layerversion
-      - simpletable
-      - statemachine
-    - iam access advisor:
-      - To help identify the unused roles, IAM reports the last-used timestamp that represents when a role was last used to make an AWS request.
-    - iam access analyzer:
-      - AWS IAM Access Analyzer helps you identify the resources in your organization and accounts, such as Amazon S3 buckets or IAM roles, that are shared with an external entity. This lets you identify unintended access to your resources and data, which is a security risk.
-  - #### test#2
-    - for ec2 asg:
-      - one scaling activity used to terminate a unhealthy instance
-      - another scaling activity used to launch a new instance
-    - Cognito sync:
-      - Amazon Cognito Sync is an AWS service and client library that enables cross-device syncing of application-related user data. You can use it to synchronize user profile data across mobile devices and the web without requiring your own backend. The client libraries cache data locally so your app can read and write data regardless of device connectivity status. When the device is online, you can synchronize data, and if you set up push sync, notify other devices immediately that an update is available.   
-    - for parameter in cloudformation:
-      - string
-      - number
-      - commaDelimitedList -- list of strings separated by commas
-      - list<number / ec2 vpc id / ec2 sg id / ec2 subnet id>
-      - ec2 key pair / ec2 vpc id / ec2 sg id / ec2 subnet id
-    - for dynamodb:
-      - updateitem action: can edit existing items or add new items if they do not exist
-      - in other words, there is no need for putItem action permission in some use cases       - to re-use ssh key:
-      - create key pair
-      - import the public key into new regions manually
-    - codeDeploy lifecycle hooks:
-      - ValidateService is the last deployment lifecycle event. It is used to verify the deployment was completed successfully.
-    - for reserved instnace billing:
-      - you can run multiple instances concurrently, but only one can receive the benefit of the reserved instance discount
-    - for kms envelope encryption:
-      - While AWS KMS does support sending data up to 4 KB to be encrypted directly, envelope encryption can offer significant performance benefits.
-      - AWS Lambda environment variables can have a maximum size of 4 KB. Additionally, the direct 'Encrypt' API of KMS also has an upper limit of 4 KB for the data payload. To encrypt 1 MB, you need to use the Encryption SDK and pack the encrypted file with the lambda function.
-    - for dynamodb transactionWriteItem operation:
-      - group up to 25 write actions(distinct items in one or more tables)
-      - optionally include a client token to ensure the request is idempotent(for some reason like connection timeout or network issues, same operations are processed for multiple times)
-    - for step functions:
-      - AWS Step Functions is a serverless function orchestrator that makes it easy to sequence AWS Lambda functions and multiple AWS services into business-critical applications.
-      - for each step, it can invoke a lambda or a container task or publish a message to a queue when the whole workflow is completed
-    - for s3 bucket:
-      - all objects are private by default.
-      - However, the object owner can optionally share objects with others by creating a pre-signed URL, using their own security credentials, to grant time-limited permission to download the objects.
-    - for lambda provisioned capacity:
-      - help lower latency by removing the init time
-    - for sns topic:
-      - By default, an Amazon SNS topic subscriber receives every message that's published to the topic.
-      - To receive only a subset of the messages, a subscriber must assign a filter policy to the topic subscription. A filter policy is a JSON object containing properties that define which messages the subscriber receives. 
-    - aws sts is not supported by api gateway
-    - aws sqs:
-      - no limit for storing messages
-      - but in-flight messages do have limits, make sure delete those processed messages
-    - cloudfront key pair:
-      - use root user to manage key pairs, can only have up to 2 active key pairs
-      - the public key is with cloudfront, use private key to sign url or cookie
-    - for s3 access logging:
-      - do not point access logging to the original bucket
-    - for SAM
-      - Presence of Transform section indicates it is a Serverless Application Model (SAM) template
-    - for EB
-      - Include config files in .ebextensions/ at the root of your source code
-      - The option_settings section of a configuration file defines values for configuration options. Configuration options let you configure your Elastic Beanstalk environment, the AWS resources in it, and the software that runs your application. Configuration files are only one of several ways to set configuration options.
-    - for cloudfront signed url and signed cookie
-      - Signed URLs take precedence over signed cookies.
-      - signed cookies: multiple files, no url changes
-    - for ebs volume:
-      - gp2 performance is tied to the volume size
-      - 5.3TiB
-    - reserved capacity:
-      - zonal reserved instances provides reserved capacity
-      - regional reserved instances does not provide reserved capacity
-    - cognito identity pool:
-      - Amazon Cognito identity pools (federated identities) enable you to create unique identities for your users and federate them with identity providers.
-    - codeDeploy:
-      - ec2, on-prem, lambda, ecs
-    - rds and dynamodb:
-      - both support transaction operations
-    - for dynamodb backup and download:
-      - on-demand
-      - PITR
-      - **note**: the underlying s3 bucket is not accessible
-      - use aws glue to copy your table to s3 and download locally and can use in another service, like athena
-      - use aws data pipeline(using aws emr under the hood) to create backup and export to s3 and then download: the easiest method using the lowest amount of aws resources(emr and hive details are abstracted)
-      - use aws emr + Hive to export your data to s3 bucet and download (if you are aws EMR user)
-    - codeDeploy:
-      - appspec.yml in the root directory
-    - for the sink types supported by kinesis firehose
-      - **note**: elasticache is not supported destination for kinesis data firehose
-      - elasticSearch (opensearch)
-      - s3
-      - redshift with s3
-    - for secrets manager:
-      - You can also use caching with Secrets Manager to significantly improve the availability and latency of applications.
-    - for io1 ebs volume:
-      - the ratio of iops and volume size is 50:1
-    - for vpc flow logs:
-      - VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC.
-      - Flow log data can be published to Amazon CloudWatch Logs or Amazon S3.
-    - api gateway:
-      - integration with cognito user pool
-      - default authorizer
-    - for step functions:
-      - if a task type has a resultPath, meaning it is a required parameter, then this is not a task, but a pass
-    - for dynamodb:
-      - support eventually consistent reads and strongly consistent reads
-      - when set ConsistentRead = true, then using strongly consistent read, otherwise eventually consistent read
-    - for aws cli:
-      - the option: --dry-run could use to check whether you have the required permissions for the action, without actually making the requests
-    - ebs volumes are az scoped
-    - for EB deployment:
-      - immutable: rollback is automated
-      - for rolling or rolling with additional batch: rollback is manual
-    - for lambda function container image:
-      - must implement the lambda runtime api
-      - lambda provides multi-architecture base image. but, the image you build for your function must target only one of the architecture. lambda does not support multi-architecture container images
-    - for sqs:
-      - delay queue let you postpone the delivery of new messages to a queue for several seconds
-    - for ecs and alb:
-      - When you deploy your services using Amazon Elastic Container Service (Amazon ECS), you can use dynamic port mapping to support multiple tasks from a single service on the same container instance. Amazon ECS manages updates to your services by automatically registering and deregistering containers with your target group using the instance ID and port for each container.
-  - #### test#3:
-    - for elasticache:
-      - improve latency and throughput for read-heavy workloads
-      - or compute-intensive workloads(like recommendation engine) by allowing you to store the objects that are often read in the cache
-    - for elb route more traffic to one instance or az:
-      - maybe sticky session
-      - maybe the instance capacity
-    - codeDeploy:
-      - in-place
-      - blue/green deployment:
-        - lambda
-        - ecs
-        - ec2/on-prem
-    - EB:
-      - rolling
-      - immutable
-      - in-place
-      - blue/green (needs route53)
-    - elasticache:
-      - redis in cluster mode: highly reliable, support transactions
-      - memcached: designed for simplicity
-    - for ec2 detailed monitoring:
-      - use `monitor-instances` option
-    - s3 bucket access:
-      - iam policy
-      - bucket policy
-      - ACLs: can grant certain permissions(read,write,...) to certain users for a bucket or object
-      - query string authentication: create a signed url
-    - for api gateway stages:
-      - The promotion can be done by redeploying the API to the prod stage or updating a stage variable value from the stage name of test to that of prod in integration endpoint so that the requests will be forwarded to that url.
-    - lambda execution context:
-      - used for init sdk client, db connection,etc
-      - improve performance
-    - iam:
-      - iam variables to dynamically specify paths for users (s3 bucket files)
-    - for s3 access deny:
-      - if iam role has proper permissions
-      - if s3 bucket policy has no explicit deny
-      - if using sse-kms
-      - then could be **kms:GenerateDataKey** action
-    - GenerateDataKey api call:
-      - Make a GenerateDataKey API call that returns a plaintext key and an encrypted copy of a data key. Use a plaintext key to encrypt the data
-      - to encrypt:
-        - GenerateDataKey to get a data key
-        - Use the plaintext data key (in the Plaintext field of the response) to encrypt your data outside of AWS KMS. Then erase the plaintext data key from memory.
-        - Store the encrypted data key (in the CiphertextBlob field of the response) with the encrypted data.
-      - to decrypt:
-        - Use the Decrypt operation to decrypt the encrypted data key. The operation returns a plaintext copy of the data key.
-        - Use the plaintext data key to decrypt data outside of AWS KMS, then erase the plaintext data key from memory.
-    - for s3 bucket cross-account sharing within different partition
-      - for aws standard partition
-      - and aws china partition
-      - we cannot use iam roles and resource-based policies to do that
-    - for aws access control list:
-      - An Access Control List (ACL) is a set of rules that define which AWS accounts or predefined groups can access your AWS resources, such as Amazon S3 buckets and objects.
-      - permissions: read, write, read_acp, write_acp, full_control
-      - only be able to grant permissions to other aws accounts
-      - no explicit deny
-      - no conditional permissions
-      - best practice: use iam policy
-    - for ecs config:
-      - in ecs.config file, to configure cluster name
-      - otherwise, new instances will be launched in the original cluster as well as the new cluster
-    - for rds disaster recovery:
-      - cross-region read replicas
-      - enable auto backup in multi-az in a single region
-    - x-ray:
-      - sampling rules
-    - for sqs message size:
-      - max: 256kb
-      - or use sqs extended client (up to 2gb)
-    - step functions:
-      - express workflows: for high event rates and short duration
-      - standard workflows: for long-running, durable, auditable workflows where repeat is expensive or harmful. support human approval
-    - sqs:
-      - store: unlimited
-      - in-flight: 120,000 approximately
-    - x-ray:
-      - To run the X-Ray daemon locally, on-premises, or on other AWS services, download it, run it, and then give it permission to upload segment documents to X-Ray.
-    - for api gateway websocket api:
-      - In a WebSocket API, the client and the server can both send messages to each other at any time. 
-    - for kms-cmk:
-      - you can create, rotate, and disable customer-managed CMKs.
-    - kinesis data stream: real-time
-    - kinesis data firehose: near real-time
-    - aws glue: integration service. used to discover, prepare, and combine data for analytics, ml, app development,etc.
-    - kinesis data stream:
-      - retention: up to 1 year
-      - can run audit applition and billing application
-    - kinesis data analytics:
-      - used to build sql queries and complicated java apps
-      - real-time
-      - no retention
-    - for lambda function types of errors:
-      - Invocation errors occur when the invocation request is rejected before your function receives it.
-      - Function errors occur when your function's code or runtime returns an error.
-    - ssm parameter store vs environment variables
-      - parameter store: secure, hierarchical storage, loaded at the runtime
-    - codeBuild:
-      - fully managed service
-      - scales automatically to meet peak build requests.
-    - for lambda environment variables:
-      - total size of all environment variables should not exceed 4kb
-      - no limit on the number of variables
-    - for s3 replication:
-      - same-region at bucket level, a shared prefix level, or an object level using object tags
-      - cross-region at bucket level, a shared prefix level, or an object level using object tags
-      - be aware that the s3 lifecycle actions are not replicated, if need, then have to configure at both buckets
-    - for EB:
-      - web server tier
-      - worker tier
-    - for s3 bucket policy:
-      - can use a condition to identify if a user has not signed in with MFA for some time using `"NumericGreaterThanIfExists": {"aws:MultiFactorAuthAge": "1800"}`
-    - for codePipeline:
-      - we can orchestrate the whole process, besides, we can add a manual approval if need
-    - for ecs cluster:
-      - when an instance is in a state of stopped, instead of terminating it, you should deregister your container instance using ecs console or aws cli
-    - for rds or dynamodb:
-      - the auto-backup or PITR only has 35 days retention
-      - need to create snapshots or create backups using aws backup
-    - for db iam authentication:
-      - rds mysql
-      - rds postgresql
-    - for ec2 detailed monitoring:
-      - the metric data resolution is 5min
-      - for high resolutions, better use custom metric
-    - for ssm parameter store:
-      - you cannot use resource-based policy
-      - for advanced tier, you can configure parameter policy for ttl
-    - for secrets manager
-      - can use resource-based policy
-      - can use iam role
-    - for cloudformation parameter section:
-      - can define : AllowedValues refers to an array containing the list of values allowed for the parameter
-    - for codeDeploy agent on ec2:
-      - You can use the `:max_revisions:` option in the agent configuration file to specify the number of application revisions to the archive by entering any positive integer
-    - for ebs encryption:
-      - data at rest
-      - all snapshots
-      - all volumes created from the snapshots
-      - data moved between the volumes and the instances
-    - for s3 bucket owner and object owner:
-      - Use S3 Object Ownership to default bucket owner to be the owner of all objects in the bucket
-      - With S3 Object Ownership, any new objects that are written by other accounts with the bucket-owner-full-control canned access control list (ACL) automatically become owned by the bucket owner, who then has full control of the objects.
-    - You can configure a Lambda function to connect to private subnets in a virtual private cloud (VPC) in your account.
+
+#### test#1
+- EB deployment:
+  - immutable: additional asg
+  - additional batch
+  - rolling
+  - all at once
+  - traffic splitting
+  - blue/green (dns change)
+  - for the sqs metric: ApproximateNumberOfMessagesVisible
+    - not good for target tracking for auto-scaling, because:
+    - the number of messages in the queue might not change proportionally to the size of the auto scaling group that process messages. Because the instance has multiple factors that could influence the total number of instances needed.
+    - so, the better way is to use a backlog per instance metric with the target value being the acceptable backlog per instance to maintain
+    - to illustrate with an example, let's say that the current ApproximateNumberOfMessages is 1500 and the fleet's running capacity is 10. If the average processing time is 0.1 seconds for each message and the longest acceptable latency is 10 seconds, then the acceptable backlog per instance is 10 / 0.1, which equals 100. This means that 100 is the target value for your target tracking policy. If the backlog per instance is currently at 150 (1500 / 10), your fleet scales out, and it scales out by five instances to maintain proportion to the target value.
+    - Step Scaling scales your cluster on various lengths of steps based on different ranges of thresholds. Target tracking on the other hand intelligently picks the smart lengths needed for the given configuration.
+    - AWS recommends using target tracking scaling policies instead.
+  - for api gateway usage plan:
+    - A usage plan specifies who can access one or more deployed API stages and methods—and also how much and how fast they can access them. The plan uses API keys to identify API clients and meters access to the associated API stages for each key.
+    - You can configure usage plans and API keys to allow customers to access selected APIs at agreed-upon request rates and quotas that meet their business requirements and budget constraints.
+  - for cloudformation output section:
+    - You can use the Export Output Values to export the name of the resource output for a cross-stack reference.
+  - for api gateway performance:
+    - response caching
+    - payload compression
+  - for ec2 burstable instances:
+    - t2, t3
+    - for each new aws account, it is free to use t2.micro within certain usage limits
+  - for aws cdk:
+    - can build the app before `cdk synth`
+    - usually, the toolkit will do it for you, so you cannot forget
+  - for ec2 auto scaling:
+    - region scoped
+    - try to evenly distribute ec2 across AZs
+    - in a vpc, clients can choose which subnets for their ec2 to launch
+  - when using cloudformation:
+    - pseudo parameters in aws:
+      - account id
+      - etc
+  - for codeBuild
+    - can configure TIMEOUT setting
+  - for api gateway
+    - use lambda authorizer to enable 3rd party authorization mechanism: uses bearer token authentication strategies
+  - for ELB:
+    - You must ensure that your load balancer can communicate with registered targets on both the listener port and the health check port.
+    - and also the elb security group is allowed by ec2 instances
+  - for ALB access log:
+    - can be used to analyze traffic patterns and troubleshoot issues
+    - has to enable manaually
+  - trust policy:
+    - the only resource-based policy supported by iam
+  - for ACL:
+    - used to control which principals in another account can access your resources
+  - for SCP
+    - specify the max permissions for an organization or an OU
+  - for permission boundary:
+    - for iam users or roles
+    - set max permissions that an identity-based policy can grant to an iam entity
+  - aws serverless application repository:
+    - pre-built serverless applications
+  - for kinesis data stream throttling:
+    - use exponential backoff
+    - or decrease the frequency or size of your requests
+    - increase the shards
+    - distribute read and write operations as evenly as possible
+  - for aws budget forecast:
+    - AWS requires approximately 5 weeks of usage data to generate budget forecasts. If you set a budget to alert based on a forecasted amount, this budget alert isn't triggered until you have enough historical usage information.
+  - for iam access analyzer
+    - simplifies inspecting unused access to guide you toward least privilege.
+  - for codeDeploy:
+    - ec2
+    - lambda
+    - on-prem
+    - can do blue/green
+  - for SAM:
+    - provides shorthand syntax for building serverless applications
+    - lambda functions
+    - apis
+    - databases
+    - event source mappings
+  - for codeCommit:
+    - iam username and password cannot be used to access it
+  - for kms:
+    - customer-managed cmk
+    - aws managed cmk
+    - aws owned cmk
+  - for efs volumes
+    - can provides a file system with your ecs tasks
+    - support fargate
+  - for secrets manager
+    - manage, rotate, retrieve db credentials
+    - mainly for rds, redshift, and documentDB
+  - for x-ray:
+    - can be used to collect data across aws accounts
+    - provides e2s view of requests as they travel through your application, showing a map of underlying components
+  - for EB:
+    - when to add configuration files
+    - use: .ebextensions/<mysettings>.config
+  - to deploy SSL/TLS server certificates:
+    - use ACM
+    - use iam: can be used as a certificate manager only when you must support https connections in a region that is not supported by ACM
+      - can store secret key
+      - can deploy server certificates
+      - but have to obtain certificates from outside
+      - cannot upload acm certificates
+      - cannot manage certificates via iam console
+  - for iam policy conditions
+    - StringNotEquals
+    - Null 
+  - ELB: cross-zone load balancing
+  - for lambda alias:
+    - traffic splitting
+  - IAM policy variables:
+    - Policy variables act as placeholders. When you make a request to AWS, the placeholder is replaced by a value from the request when the policy is evaluated.
+  - for elasticache
+    - they are not retional db, cannot be used to run sql queries
+  - cloudfront key pairs:
+    - can only be created by root user
+  - for x-ray:
+    - sampling: Sampling rules tell the X-Ray SDK how many requests to record for a set of criteria.
+  - for EB:
+    - ElastiCache defined in .ebextensions/ - Any resources created as part of your .ebextensions is part of your Elastic Beanstalk template and will get deleted if the environment is terminated.
+    - To decouple your database instance from your environment, you can run a database instance in Amazon RDS and configure your application to connect to it on launch.
+  - for cloudformation stackset:
+    - create, update, delete stacks across multiple accounts and aws regions
+  - for api gateway mapping templates:
+    - API Gateway lets you use mapping templates to map the payload from a method request to the corresponding integration request and from an integration response to the corresponding method response.
+  - to enable iam users to access billing and cost management console:
+    - configure iam policy
+    - use root user account to activate iam user access to the billing and cost management console
+  - for SAM supported resources type:
+    - api
+    - application
+    - function
+    - httpapi
+    - layerversion
+    - simpletable
+    - statemachine
+  - iam access advisor:
+    - To help identify the unused roles, IAM reports the last-used timestamp that represents when a role was last used to make an AWS request.
+  - iam access analyzer:
+    - AWS IAM Access Analyzer helps you identify the resources in your organization and accounts, such as Amazon S3 buckets or IAM roles, that are shared with an external entity. This lets you identify unintended access to your resources and data, which is a security risk.
+
+
+#### test#2
+- for ec2 asg:
+  - one scaling activity used to terminate a unhealthy instance
+  - another scaling activity used to launch a new instance
+- Cognito sync:
+  - Amazon Cognito Sync is an AWS service and client library that enables cross-device syncing of application-related user data. You can use it to synchronize user profile data across mobile devices and the web without requiring your own backend. The client libraries cache data locally so your app can read and write data regardless of device connectivity status. When the device is online, you can synchronize data, and if you set up push sync, notify other devices immediately that an update is available.   
+- for parameter in cloudformation:
+  - string
+  - number
+  - commaDelimitedList -- list of strings separated by commas
+  - list<number / ec2 vpc id / ec2 sg id / ec2 subnet id>
+  - ec2 key pair / ec2 vpc id / ec2 sg id / ec2 subnet id
+- for dynamodb:
+  - updateitem action: can edit existing items or add new items if they do not exist
+  - in other words, there is no need for putItem action permission in some use cases       - to re-use ssh key:
+  - create key pair
+  - import the public key into new regions manually
+- codeDeploy lifecycle hooks:
+  - ValidateService is the last deployment lifecycle event. It is used to verify the deployment was completed successfully.
+- for reserved instnace billing:
+  - you can run multiple instances concurrently, but only one can receive the benefit of the reserved instance discount
+- for kms envelope encryption:
+  - While AWS KMS does support sending data up to 4 KB to be encrypted directly, envelope encryption can offer significant performance benefits.
+  - AWS Lambda environment variables can have a maximum size of 4 KB. Additionally, the direct 'Encrypt' API of KMS also has an upper limit of 4 KB for the data payload. To encrypt 1 MB, you need to use the Encryption SDK and pack the encrypted file with the lambda function.
+- for dynamodb transactionWriteItem operation:
+  - group up to 25 write actions(distinct items in one or more tables)
+  - optionally include a client token to ensure the request is idempotent(for some reason like connection timeout or network issues, same operations are processed for multiple times)
+- for step functions:
+  - AWS Step Functions is a serverless function orchestrator that makes it easy to sequence AWS Lambda functions and multiple AWS services into business-critical applications.
+  - for each step, it can invoke a lambda or a container task or publish a message to a queue when the whole workflow is completed
+- for s3 bucket:
+  - all objects are private by default.
+  - However, the object owner can optionally share objects with others by creating a pre-signed URL, using their own security credentials, to grant time-limited permission to download the objects.
+- for lambda provisioned capacity:
+  - help lower latency by removing the init time
+- for sns topic:
+  - By default, an Amazon SNS topic subscriber receives every message that's published to the topic.
+  - To receive only a subset of the messages, a subscriber must assign a filter policy to the topic subscription. A filter policy is a JSON object containing properties that define which messages the subscriber receives. 
+- aws sts is not supported by api gateway
+- aws sqs:
+  - no limit for storing messages
+  - but in-flight messages do have limits, make sure delete those processed messages
+- cloudfront key pair:
+  - use root user to manage key pairs, can only have up to 2 active key pairs
+  - the public key is with cloudfront, use private key to sign url or cookie
+- for s3 access logging:
+  - do not point access logging to the original bucket
+- for SAM
+  - Presence of Transform section indicates it is a Serverless Application Model (SAM) template
+- for EB
+  - Include config files in .ebextensions/ at the root of your source code
+  - The option_settings section of a configuration file defines values for configuration options. Configuration options let you configure your Elastic Beanstalk environment, the AWS resources in it, and the software that runs your application. Configuration files are only one of several ways to set configuration options.
+- for cloudfront signed url and signed cookie
+  - Signed URLs take precedence over signed cookies.
+  - signed cookies: multiple files, no url changes
+- for ebs volume:
+  - gp2 performance is tied to the volume size
+  - 5.3TiB
+- reserved capacity:
+  - zonal reserved instances provides reserved capacity
+  - regional reserved instances does not provide reserved capacity
+- cognito identity pool:
+  - Amazon Cognito identity pools (federated identities) enable you to create unique identities for your users and federate them with identity providers.
+- codeDeploy:
+  - ec2, on-prem, lambda, ecs
+- rds and dynamodb:
+  - both support transaction operations
+- for dynamodb backup and download:
+  - on-demand
+  - PITR
+  - **note**: the underlying s3 bucket is not accessible
+  - use aws glue to copy your table to s3 and download locally and can use in another service, like athena
+  - use aws data pipeline(using aws emr under the hood) to create backup and export to s3 and then download: the easiest method using the lowest amount of aws resources(emr and hive details are abstracted)
+  - use aws emr + Hive to export your data to s3 bucet and download (if you are aws EMR user)
+- codeDeploy:
+  - appspec.yml in the root directory
+- for the sink types supported by kinesis firehose
+  - **note**: elasticache is not supported destination for kinesis data firehose
+  - elasticSearch (opensearch)
+  - s3
+  - redshift with s3
+- for secrets manager:
+  - You can also use caching with Secrets Manager to significantly improve the availability and latency of applications.
+- for io1 ebs volume:
+  - the ratio of iops and volume size is 50:1
+- for vpc flow logs:
+  - VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC.
+  - Flow log data can be published to Amazon CloudWatch Logs or Amazon S3.
+- api gateway:
+  - integration with cognito user pool
+  - default authorizer
+- for step functions:
+  - if a task type has a resultPath, meaning it is a required parameter, then this is not a task, but a pass
+- for dynamodb:
+  - support eventually consistent reads and strongly consistent reads
+  - when set ConsistentRead = true, then using strongly consistent read, otherwise eventually consistent read
+- for aws cli:
+  - the option: --dry-run could use to check whether you have the required permissions for the action, without actually making the requests
+- ebs volumes are az scoped
+- for EB deployment:
+  - immutable: rollback is automated
+  - for rolling or rolling with additional batch: rollback is manual
+- for lambda function container image:
+  - must implement the lambda runtime api
+  - lambda provides multi-architecture base image. but, the image you build for your function must target only one of the architecture. lambda does not support multi-architecture container images
+- for sqs:
+  - delay queue let you postpone the delivery of new messages to a queue for several seconds
+- for ecs and alb:
+  - When you deploy your services using Amazon Elastic Container Service (Amazon ECS), you can use dynamic port mapping to support multiple tasks from a single service on the same container instance. Amazon ECS manages updates to your services by automatically registering and deregistering containers with your target group using the instance ID and port for each container.
+
+
+
+#### test#3:
+- for elasticache:
+  - improve latency and throughput for read-heavy workloads
+  - or compute-intensive workloads(like recommendation engine) by allowing you to store the objects that are often read in the cache
+- for elb route more traffic to one instance or az:
+  - maybe sticky session
+  - maybe the instance capacity
+- codeDeploy:
+  - in-place
+  - blue/green deployment:
+    - lambda
+    - ecs
+    - ec2/on-prem
+- EB:
+  - rolling
+  - immutable
+  - in-place
+  - blue/green (needs route53)
+- elasticache:
+  - redis in cluster mode: highly reliable, support transactions
+  - memcached: designed for simplicity
+- for ec2 detailed monitoring:
+  - use `monitor-instances` option
+- s3 bucket access:
+  - iam policy
+  - bucket policy
+  - ACLs: can grant certain permissions(read,write,...) to certain users for a bucket or object
+  - query string authentication: create a signed url
+- for api gateway stages:
+  - The promotion can be done by redeploying the API to the prod stage or updating a stage variable value from the stage name of test to that of prod in integration endpoint so that the requests will be forwarded to that url.
+- lambda execution context:
+  - used for init sdk client, db connection,etc
+  - improve performance
+- iam:
+  - iam variables to dynamically specify paths for users (s3 bucket files)
+- for s3 access deny:
+  - if iam role has proper permissions
+  - if s3 bucket policy has no explicit deny
+  - if using sse-kms
+  - then could be **kms:GenerateDataKey** action
+- GenerateDataKey api call:
+  - Make a GenerateDataKey API call that returns a plaintext key and an encrypted copy of a data key. Use a plaintext key to encrypt the data
+  - to encrypt:
+    - GenerateDataKey to get a data key
+    - Use the plaintext data key (in the Plaintext field of the response) to encrypt your data outside of AWS KMS. Then erase the plaintext data key from memory.
+    - Store the encrypted data key (in the CiphertextBlob field of the response) with the encrypted data.
+  - to decrypt:
+    - Use the Decrypt operation to decrypt the encrypted data key. The operation returns a plaintext copy of the data key.
+    - Use the plaintext data key to decrypt data outside of AWS KMS, then erase the plaintext data key from memory.
+- for s3 bucket cross-account sharing within different partition
+  - for aws standard partition
+  - and aws china partition
+  - we cannot use iam roles and resource-based policies to do that
+- for aws access control list:
+  - An Access Control List (ACL) is a set of rules that define which AWS accounts or predefined groups can access your AWS resources, such as Amazon S3 buckets and objects.
+  - permissions: read, write, read_acp, write_acp, full_control
+  - only be able to grant permissions to other aws accounts
+  - no explicit deny
+  - no conditional permissions
+  - best practice: use iam policy
+- for ecs config:
+  - in ecs.config file, to configure cluster name
+  - otherwise, new instances will be launched in the original cluster as well as the new cluster
+- for rds disaster recovery:
+  - cross-region read replicas
+  - enable auto backup in multi-az in a single region
+- x-ray:
+  - sampling rules
+- for sqs message size:
+  - max: 256kb
+  - or use sqs extended client (up to 2gb)
+- step functions:
+  - express workflows: for high event rates and short duration
+  - standard workflows: for long-running, durable, auditable workflows where repeat is expensive or harmful. support human approval
+- sqs:
+  - store: unlimited
+  - in-flight: 120,000 approximately
+- x-ray:
+  - To run the X-Ray daemon locally, on-premises, or on other AWS services, download it, run it, and then give it permission to upload segment documents to X-Ray.
+- for api gateway websocket api:
+  - In a WebSocket API, the client and the server can both send messages to each other at any time. 
+- for kms-cmk:
+  - you can create, rotate, and disable customer-managed CMKs.
+- kinesis data stream: real-time
+- kinesis data firehose: near real-time
+- aws glue: integration service. used to discover, prepare, and combine data for analytics, ml, app development,etc.
+- kinesis data stream:
+  - retention: up to 1 year
+  - can run audit applition and billing application
+- kinesis data analytics:
+  - used to build sql queries and complicated java apps
+  - real-time
+  - no retention
+- for lambda function types of errors:
+  - Invocation errors occur when the invocation request is rejected before your function receives it.
+  - Function errors occur when your function's code or runtime returns an error.
+- ssm parameter store vs environment variables
+  - parameter store: secure, hierarchical storage, loaded at the runtime
+- codeBuild:
+  - fully managed service
+  - scales automatically to meet peak build requests.
+- for lambda environment variables:
+  - total size of all environment variables should not exceed 4kb
+  - no limit on the number of variables
+- for s3 replication:
+  - same-region at bucket level, a shared prefix level, or an object level using object tags
+  - cross-region at bucket level, a shared prefix level, or an object level using object tags
+  - be aware that the s3 lifecycle actions are not replicated, if need, then have to configure at both buckets
+- for EB:
+  - web server tier
+  - worker tier
+- for s3 bucket policy:
+  - can use a condition to identify if a user has not signed in with MFA for some time using `"NumericGreaterThanIfExists": {"aws:MultiFactorAuthAge": "1800"}`
+- for codePipeline:
+  - we can orchestrate the whole process, besides, we can add a manual approval if need
+- for ecs cluster:
+  - when an instance is in a state of stopped, instead of terminating it, you should deregister your container instance using ecs console or aws cli
+- for rds or dynamodb:
+  - the auto-backup or PITR only has 35 days retention
+  - need to create snapshots or create backups using aws backup
+- for db iam authentication:
+  - rds mysql
+  - rds postgresql
+- for ec2 detailed monitoring:
+  - the metric data resolution is 5min
+  - for high resolutions, better use custom metric
+- for ssm parameter store:
+  - you cannot use resource-based policy
+  - for advanced tier, you can configure parameter policy for ttl
+- for secrets manager
+  - can use resource-based policy
+  - can use iam role
+- for cloudformation parameter section:
+  - can define : AllowedValues refers to an array containing the list of values allowed for the parameter
+- for codeDeploy agent on ec2:
+  - You can use the `:max_revisions:` option in the agent configuration file to specify the number of application revisions to the archive by entering any positive integer
+- for ebs encryption:
+  - data at rest
+  - all snapshots
+  - all volumes created from the snapshots
+  - data moved between the volumes and the instances
+- for s3 bucket owner and object owner:
+  - Use S3 Object Ownership to default bucket owner to be the owner of all objects in the bucket
+  - With S3 Object Ownership, any new objects that are written by other accounts with the bucket-owner-full-control canned access control list (ACL) automatically become owned by the bucket owner, who then has full control of the objects.
+- You can configure a Lambda function to connect to private subnets in a virtual private cloud (VPC) in your account.
   
   - #### test#4
     - for kinesis data stream throttling error:
@@ -3065,8 +3070,158 @@ item up to 1 KB in size. if more than 1kb, then more wcus
         - you can specify IP addresses from specific CIDR blocks only. You can't specify publicly routable IP addresses.
   
   
-  - #### test#5
-  - #### test#6
+#### test#5
+
+- for EB:
+  - if the job is taking long time to be done, then consider using worker environment
+  - if needs cron jobs or do repetitive tasks, then define a cron.yaml file
+- for dynamodb GSI and LSI:
+  - GSI:
+    - is considered "global" because queries on the index can span all of the data in the base table, across all partitions. A global secondary index is stored in its own partition space away from the base table and scales separately from the base table.
+  - LSI:
+    - A local secondary index is "local" in the sense that every partition of a local secondary index is scoped to a base table partition that has the same partition key value.   
+  - note: if GSI gets throttled, then it will impact the base table regardless if there is enough rcu or wcu on base table
+- for elasticache caching update strategies:
+  - write-through:
+    - adds data or updates data in the cache whenever data is written to the database.
+  - lazy loading:
+    - loads data into the cache only when necessary.
+- for SAM:
+  - allows you to choose from a list of policy templates to scope the permissions of your Lambda functions to the resources that are used by your application.
+  - AWS SAM applications in the AWS Serverless Application Repository that use policy templates don't require any special customer acknowledgments to deploy the application from the AWS Serverless Application Repository.
+  - s3ReadPolicy
+  - s3CrudPolicy
+  - sqsPollerPolicy
+  - lambdaInvokePolicy
+- for s3:
+  - versioning can not be only enabled for a specific folder
+- for EB:
+  - lifecycle policy:
+    - Each time you upload a new version of your application with the Elastic Beanstalk console or the EB CLI, Elastic Beanstalk creates an application version. If you don't delete versions that you no longer use, you will eventually reach the application version limit and be unable to create new versions of that application.
+    - You can avoid hitting the limit by applying an application version lifecycle policy to your applications. A lifecycle policy tells Elastic Beanstalk to delete old application versions or to delete application versions when the total number of versions for an application exceeds a specified number.
+- for kinesis data stream:
+  - at any given time, each shard  of data records is bound to a particular worker via a lease
+- for rds mysql:
+  - storage autoscaling can scale your db storage space when it is running out of space.
+  - factors:
+    - less than 10 percent of free space
+    - low-storage condition lasts at least five minutes
+    - at least six hours have passed since the last storage modification
+  - note: there is a maximum storage threshold is limit that you set for autoscaling the db instance
+- for x-ray environment variables:
+  - AWS_XRAY_DAEMON_ADDRESS: which can ensure that ecs service will discover the x-ray daemon
+  - by default, x-ray daemon sdk uses 127.0.0.1:2000 for both trace data (UDP) and sampling (TCP).
+  - other environment variables:
+    - AWS_XRAY_TRACING_NAME: set name for segements
+    - AWS_XRAY_CONTEXT_MISSING: This should be set to LOG_ERROR to avoid throwing exceptions when your instrumented code attempts to record data when no segment is open.
+    - AWS_XRAY_DEBUG_MODE: This should be set to TRUE to configure the SDK to output logs to the console, instead of configuring a logger.
+- for elasicache caching strategies:
+  - write-through
+  - lazy loading
+- for cloudwatch unified agent:
+  - collect internal sysstem-level metrics from ec2, in addtion to the metrics for ec2
+  - collect system-level metrics from on-prem
+  - retrieve custom metrics from apps or services using StatsD and collectd.
+    - note: StatsD support linux and windows server, collectd only support linux
+  - collect logs from ec2 and on-prem across multiple os
+- for sqs fifo:
+  - messageGroupId: the tag that specifies that a message belongs to a specific message group. Messages that belong to the same message group are always processed one by one, in a strict order relative to the message group (however, messages that belong to different message groups might be processed out of order).
+- for s3:
+  - s3 select: enables applications to retrieve only a subset of data from an object by using simple SQL expressions. By using S3 Select to retrieve only the data needed by your application, you can achieve drastic performance increases in many cases you can get as much as a 400% improvement.
+  - s3 inventory: help manage s3 storage. can be used to audit and report on the replication and encryption status of your objects for business, compliance, and regulatory needs.
+  - s3 analytics: can be used to decide which storage class to choose (standard or standard IA, used with s3 lifecycle policy)
+  - s3 access logs: Server access logging provides detailed records for the requests that are made to a bucket. 
+- DNS services are identified by a public IP, so you need to use Elastic IP.
+- for api gateway:
+  - canary deployment: traffic splitting
+- for s3 static website:
+  - make sure the bucket is public or modify the bucket policy to make it public
+- for cloudfront cache policy:
+  - query string
+  - header
+  - cookie
+- for kms data key:
+  - Data key caching stores data keys and related cryptographic material in a cache. When you encrypt or decrypt data, the AWS Encryption SDK looks for a matching data key in the cache. If it finds a match, it uses the cached data key rather than generating a new one. Data key caching can improve performance, reduce cost, and help you stay within service limits as your application scales.
+  - note: In general, use data key caching only when it is required to meet your performance goals. Then, use the data key caching security thresholds to ensure that you use the minimum amount of caching required to meet your cost and performance goals.
+- for code build encryption:
+  - By default, AWS CodeBuild uses the AWS-managed CMK for Amazon S3 in your AWS account. The following environment variable provides these details:
+  - CODEBUILD_KMS_KEY_ID: The identifier of the AWS KMS key that CodeBuild is using to encrypt the build output artifact (for example, arn:aws:kms:region-ID:account-ID:key/key-ID or alias/key-alias).
+- for elb:
+  - when coming across a timeout error, check security group for the ec2 instances
+- for api gateway access control:
+  - lambda authorizer: using bearer token authentication as well as headers, paths, query strings, stage variables, content variables request parameter.
+  - cognito user pool
+  - iam permissions with sigv4: can be applied to whole api or single method
+- for lambda in cloudformation:
+  - inline with no dependency
+  - aws::lambda::function block with zip code
+- to paginate the results of an s3 list
+  - the option --starting-token
+  - the option --max-items
+- for EB https:
+  - The simplest way to use HTTPS with an Elastic Beanstalk environment is to assign a server certificate to your environment's load balancer.
+  - for example: .ebextensions/securelistener-alb.config, configure procotol and certificate
+- for sts credentials:
+  - by default, valid period is 15 min to 1 hr
+  - hence, need to renew the credentials post expiry
+- for 5xx error:
+  - 500: internal server error
+  - 501: not implemented
+  - 502: bad gateway: something wrong with the target
+  - 503: service unavailable: no targets in the target group
+  - 504: gateway timeout
+- for iam policy and s3 bucket policy:
+  - When evaluating an IAM policy of an EC2 instance doing actions on S3, the least-privilege union of both the IAM policy of the EC2 instance and the bucket policy of the S3 bucket are taken into account.
+- for lambda deployment:
+  - A deployment package is a ZIP archive that contains your function code and dependencies. You need to create a deployment package if you use the Lambda API to manage functions, or if you need to include libraries and dependencies other than the AWS SDK. You can upload the package directly to Lambda, or you can use an Amazon S3 bucket, and then upload it to Lambda. If the deployment package is larger than 50 MB, you must use Amazon S3. This is the standard way of packaging Lambda functions.
+- cognito user pool
+  - pre-signup
+  - post-confirmation
+  - post-authentication
+- for iam user and ecr:
+  - by default, iam users do not have permissions to create/modify ecr resources or perform tasks using ecr api.
+  - a user who use code build should make sure code build service has enough permissions to perform operations
+- for code star:
+  - AWS CodeStar enables you to quickly develop, build, and deploy applications on AWS. AWS CodeStar provides a unified user interface, enabling you to easily manage your software development activities in one place.
+  - Each AWS CodeStar project comes with a project management dashboard, including an integrated issue tracking capability powered by Atlassian JIRA Software. With the AWS CodeStar project dashboard, you can easily track progress across your entire software development process, from your backlog of work items to teams’ recent code deployments.
+- lambda provisioned concurrency:
+  - initialization code
+  - can only be used with published versions and aliases, not $latest
+- for s3 macie data finding types:
+  - SensitiveData:S3Object/Financial
+  - SensitiveData:S3Object/Customidentifier
+  - SensitiveData:S3Object/Credentials
+  - SensitiveData:S3Object/Multiple
+  - SensitiveData:S3Object/Personal
+- for EB docker :
+  - Docker multi-container platform: multi containers run in a single ec2
+- for lambda /tmp:
+  - 512 mb of temporary space in your lambda functions
+- for x-ray traces index, search, and filter:
+  - annotations: simple key-value pairs that are indexed for use with filter expressions. Use annotations to record data that you want to use to group traces in the console, or when calling the GetTraceSummaries API.
+- for iam policy: policy variables
+  - You can assign access to "dynamically calculated resources" by using policy variables, a feature that lets you specify placeholders in a policy. When the policy is evaluated, the policy variables are replaced with values that come from the context of the request itself.
+- for x-ray daemon and ecs fargate:
+  - in ecs fargate, we do not have control over the underlying ec2 instance,
+  - thus,  we cannot deploy the agent on the EC2 instance or run an X-Ray agent container as a daemon set (only available for ECS classic).
+  - so, Deploy the X-Ray daemon agent as a sidecar container
+- for sqs queue deduplicating messages:
+  - MessageDeduplicationId: The message deduplication ID is the token used for the deduplication of sent messages. If a message with a particular message deduplication ID is sent successfully, any messages sent with the same message deduplication ID are accepted successfully but aren't delivered during the 5-minute deduplication interval.
+  - prevent duplicate messages from being processed.
+- for api gateway and lambda:
+  - for 500 internal server error
+  - api iam role + lambda resource-based policy
+  - create an iam role that api can assume to invoke your lambda
+- for cloudwatch agent on-prem:
+  - the access key and secret key must be specified
+- for querying instance metadata:
+  - To view all categories of instance metadata from within a running instance, use the following URI - http://169.254.169.254/latest/meta-data/. The IP address 169.254.169.254 is a link-local address and is valid only from the instance. All instance metadata is returned as text (HTTP content type text/plain).
+  - Because your instance metadata is available from your running instance, you do not need to use the Amazon EC2 console or the AWS CLI. 
+- for cloudfront cache behavior:
+  - Configure a second cache behavior to the distribution having the same origin as the default cache behavior and have the path pattern for the second cache behavior as the path of the login page with viewer access as unrestricted. Keep the default cache behavior’s settings unchanged
+
+
+#### test#6
 
 
 
