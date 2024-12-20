@@ -3225,23 +3225,130 @@ item up to 1 KB in size. if more than 1kb, then more wcus
 
 #### test#6
 
+- for EB cross-account migration:
+  - you must save configurations and download it first
+  - then change account-specific parameters in the configuration file
+  - then upload the configuration file to a s3 bucket of another aws account
+- for DeleteOnTermination of ec2 volume:
+  - if the instance is running, then
+  - use aws cli to configure this setting
+- efs: file storage service
+- s3: object storage service
+- for sqs:
+  - When you request messages from a queue, you can't specify which messages to retrieve. Instead, you specify the maximum number of messages (up to 10) that you want to retrieve.
+- for cloudformation template:
+  - when upload a template
+  - cloudformation will send it to a s3 bucket
+- for asg launch template:
+  - can configure on-demand or spot instances
+  - can use a user data to run a script
+  - a script can be used to install software, like codeDeploy agent
+- for lambda configure:
+  - at 1,769mb, you will have a whole vCPU
+  - after it, consider using multi-threading
+- ec2 auto scaling:
+  - work with alb, nlb
+  - can use ec2 api to add volume to an existing instance
+- for kinesis data firehose:
+  - fully managed service
+  - easy to load streaming data into data lake with ETL
+- for kinesis data analytics
+  - serverless
+  - filter, aggregate, transform streaming data in real-time
+  - apache flink
+- for elb:
+  - fixed dns name
+  - not fixed ip address
+- for code deploy:
+  - we can define one or more deployment groups
+  - we can configure each group
+- for sqs retention:
+  - from 1min to 14 days
+- for sqs message visibility
+  - could prevent the message from being processed by other consumers
+- for s3 strong read-after-write consistency:
+  - Amazon S3 delivers strong read-after-write consistency automatically, without changes to performance or availability, without sacrificing regional isolation for applications, and at no additional cost.
+  - After a successful write of a new object or an overwrite of an existing object, any subsequent read request immediately receives the latest version of the object.
+  - To summarize, all S3 GET, PUT, and LIST operations, as well as operations that change object tags, ACLs, or metadata, are strongly consistent.
+- for ecs looking for a serverless data store service:
+  - define two containers in a single task definition
+- 5xx errors:
+  - 503: service unavailable -- no targets in target group
+  - 500: internal server error
+  - 504: gatewat timeout
+- for api gateway stage variables:
+  - can be configured to connect to different http web host or lambda
+- for lambda aliases:
+  - a pointer to a specific lambda function version
+- for ec2 reserved instances:
+  - cost saving
+- for cloudfront caching miss:
+  - Redirect requests on cache misses to the S3 bucket nearest to the user country. Create a Lambda@Edge function to redirect requests based on the value of the CloudFront-Viewer-Country header. Associate the Lambda@Edge function with the distribution's origin request event
+- for cloudfront:
+  - viewer requests
+  - origin requests
+- for lambda@edge and cloudfront function
+  - lambda@edge: viewer requests and viewer response, origin requests and origin response
+    - complex tasks
+  - cloudfront function: viewer requests and viewer response
+    - lightweight than lambda@edge
+    - simple tasks
+- for s3 event:
+  - similar to cloudwatch metric data point api calls
+  - when two writes made to a single non-versioned object at the same time, then it is possible that only a single event notification will be sent
+- for ecs task:
+  - configure ECS_ENABLE_TASK_IAM_ROLE to allow iam roles for the tasks of containers
+- to pull ecr images:
+  - first use `aws ecr get-login` to login
+  - then use docker command to pull images
+- for awslogs log driver:
+  - for ecs containers, configure to send logs to cloudwatch logs
+  - if using fargate launch type, then add required logConfiguration parameters to task definition to turn on awslogs log driver
+- for code Build
+  - serverless
+  - can use code build agent to test and debug builds locally    
+- api gateway and cloudwatch logs:
+  - role with assumeRole
+  - role with trust policy
+- cloudfront origin groups:
+  - CloudFront routes all incoming requests to the primary origin, even when a previous request failed over to the secondary origin
+  - CloudFront fails over to the secondary origin only when the HTTP method of the viewer request is GET, HEAD or OPTIONS
+- for alb redirect action
+  - use query string conditions to configure rules that route requests based on key/value pairs or values in the query string
+- for api gateway lambda authorier:
+  - token-based
+  - request parameter-based
+- for aws kms:
+  - the max size that can be encrypted is 4kb
+  - otherwise, using data key
+- for kinesis data stream:
+  - enhanced fanout feature: each consumer can receive 2mb/s/per shard
+  - without enhanced fanout: 2mb/s/shard is shared among all consumers
+- for kinesis data stream shard capacity:
+  - when reach limit, it will get ProvisionedThroughputExceeded errors
+- for dynamodb consistently recording high latency
+  - consider using global tables if it is serving global users
+  - consider using eventually consistent reads instead of strongly consistent reads
+  - note: DAX is for offloading read-heavy workloads, not for decreasing latency
+- for ebs volume encryption
+  - encryption is a regional setting, cannot be applied on a single ebs volume
+  - a volume restored from an encrypted snapshot or a copy of encrypted snapshot is always encrypted
+  - note: cannot encrypt an unencrypted volume or snapshot, have to copy command while enabling encryption
+- for rds multi-az
+  - i/o activity will not be suspended during automated backup, as backup taken from standby
+  - multi-az standby cannot be used as read replica
+  - multi-az standby synchronously syned with main db
+- for kinesis data stream:
+  - data encrypted at rest using kms cmk
+  - data encrypted in transit using https
+- s3 data consistency model
+  - If you delete a bucket and immediately list all buckets, the deleted bucket might still appear in the list -- Bucket configurations have an eventual consistency model. If you delete a bucket and immediately list all buckets, the deleted bucket might still appear in the list.
+  - A process deletes an existing object and immediately tries to read it. Amazon S3 will not return any data as the object has been deleted -- Amazon S3 provides strong read-after-write consistency for PUTs and DELETEs of objects in your Amazon S3 bucket in all AWS Regions. This applies to both writes to new objects as well as PUTs that overwrite existing objects and DELETEs.
+- for cloudtrail event:
+  - AWS CloudTrail event logs for 'CreateVolume' aren't available for EBS volumes created during an Amazon EC2 launch
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
 
 
